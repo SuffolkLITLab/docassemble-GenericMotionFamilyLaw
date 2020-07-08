@@ -1,0 +1,753 @@
+---
+include:
+  - docassemble.MAVirtualCourt:basic-questions.yml
+---
+mandatory: True
+code: |
+  interview_metadata # make sure we initialize the object
+  if not defined("interview_metadata['Generic_Motion_Family_Law_relabeled0014']"):
+    interview_metadata.initializeObject('Generic_Motion_Family_Law_relabeled0014')
+  interview_metadata['Generic_Motion_Family_Law_relabeled0014'].update({
+    'title': 'Motion (Family Law)',
+    'short title': 'Generic Motion Family Law',
+    'description': 'Generic Motion Family Law',
+    'original_form': 'masslegalhelp.org',
+    'allowed courts': [
+      'Probate and Family Court',
+    ],
+    'preferred court': 'Probate and Family Court',
+    'categories': [
+      'Family Law',
+    ],
+    'logic block variable': 'Generic_Motion_Family_Law_relabeled0014',
+    'attachment block variable': 'Generic_Motion_Family_Law_relabeled0014_attachment',
+    'typical role': 'unknown',
+    'built_in_fields_used': [
+      {'variable': 'docket_number',
+       'transformed_variable': 'docket_numbers[0]',
+      },
+      {'variable': 'plaintiff',
+       'transformed_variable': 'str(plaintiffs[0])',
+      },
+      {'variable': 'defendant',
+       'transformed_variable': 'str(defendants[0])',
+      },
+      {'variable': 'user_name',
+       'transformed_variable': 'str(users[0])',
+      },
+      {'variable': 'signature_date__1',
+       'transformed_variable': 'signature_date',
+      },
+      {'variable': 'user_signature',
+       'transformed_variable': 'users[0].signature',
+      },
+      {'variable': 'user_name__2',
+       'transformed_variable': 'str(users[0])',
+      },
+      {'variable': 'user_address_street',
+       'transformed_variable': 'users[0].address.address',
+      },
+      {'variable': 'user_address_city',
+       'transformed_variable': 'users[0].address.city',
+      },
+      {'variable': 'user_address_state',
+       'transformed_variable': 'users[0].address.state',
+      },
+      {'variable': 'user_address_zip',
+       'transformed_variable': 'users[0].address.zip',
+      },
+      {'variable': 'user_phone',
+       'transformed_variable': 'users[0].phone_number',
+      },
+      {'variable': 'docket_number__2',
+       'transformed_variable': 'docket_numbers[0]',
+      },
+      {'variable': 'signature_date__2',
+       'transformed_variable': 'signature_date',
+      },
+      {'variable': 'other_party_name',
+       'transformed_variable': 'str(other_parties[0])',
+      },
+      {'variable': 'other_party_address_street',
+       'transformed_variable': 'other_parties[0].address.address',
+      },
+      {'variable': 'other_party_address_city',
+       'transformed_variable': 'other_parties[0].address.city',
+      },
+      {'variable': 'other_party_address_state',
+       'transformed_variable': 'other_parties[0].address.state',
+      },
+      {'variable': 'other_party_address_zip',
+       'transformed_variable': 'other_parties[0].address.zip',
+      },
+      {'variable': 'user_signature__2',
+       'transformed_variable': 'users[0].signature',
+      },
+      ],
+    'fields': [
+      {'variable': 'court_division',
+       'transformed_variable': 'courts[0].division',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'motion_name',
+       'transformed_variable': 'motion_name',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'user_is_petitioner',
+       'transformed_variable': 'users[0].is_petitioner',
+      'field_type': 'yesno',
+      },
+      {'variable': 'user_is_defendant',
+       'transformed_variable': 'users[0].is_defendant',
+      'field_type': 'yesno',
+      },
+      {'variable': 'user_is_plaintiff',
+       'transformed_variable': 'users[0].is_plaintiff',
+      'field_type': 'yesno',
+      },
+      {'variable': 'user_is_respondent',
+       'transformed_variable': 'users[0].is_respondent',
+      'field_type': 'yesno',
+      },
+      {'variable': 'user_request',
+       'transformed_variable': 'users[0].request',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'hearing_city',
+       'transformed_variable': 'hearing_city',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'hearing_date_month_day_year',
+       'transformed_variable': 'hearing_date_month_day_year',
+      'field_type': 'text',
+      'field_data_type': 'date',
+      },
+      {'variable': 'hearing_time',
+       'transformed_variable': 'hearing_time',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'bbo_number',
+       'transformed_variable': 'bbo_number',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'court_division__2',
+       'transformed_variable': 'courts[0].division',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'motion_name__2',
+       'transformed_variable': 'motion_name',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'service_by_hand_date',
+       'transformed_variable': 'service_by_hand_date',
+      'field_type': 'text',
+      'field_data_type': 'date',
+      },
+      {'variable': 'service_by_hand_time',
+       'transformed_variable': 'service_by_hand_time',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'service_by_hand',
+       'transformed_variable': 'service_by_hand',
+      'field_type': 'yesno',
+      },
+      {'variable': 'service_by_hand_in_pm',
+       'transformed_variable': 'service_by_hand_in_pm',
+      'field_type': 'yesno',
+      },
+      {'variable': 'service_by_hand_in_am',
+       'transformed_variable': 'service_by_hand_in_am',
+      'field_type': 'yesno',
+      },
+      {'variable': 'service_by_mailing_date',
+       'transformed_variable': 'service_by_mailing_date',
+      'field_type': 'text',
+      'field_data_type': 'date',
+      },
+      {'variable': 'service_by_mailing',
+       'transformed_variable': 'service_by_mailing',
+      'field_type': 'yesno',
+      },
+      ],
+  })
+---
+id: interview_order_Generic_Motion_Family_Law_relabeled0014
+mandatory: True
+code: |
+  # This is a placeholder to control logic flow in this interview
+  # It was generated from interview_generator.py as an 'interview order' type question.
+  basic_questions_intro_screen 
+  Generic_Motion_Family_Law_relabeled0014_intro
+  # Set the preferred/allowed courts for this interview
+  preferred_court = interview_metadata["Generic_Motion_Family_Law_relabeled0014"]["preferred court"]
+  allowed_courts = interview_metadata["Generic_Motion_Family_Law_relabeled0014"]["allowed courts"]
+  str(users[0])
+  stop_collecting_users
+  str(other_parties[0])
+  if lives_in_domestic_violence_shelter is True or impound_address is True: 
+    set_impoundment_address
+    if should_impound_phone_number is True: 
+      set_impoundment_phone_number
+    else:
+      users[0].phone_number
+      #triggers asking for the user's phone number 
+      set_actual_phone_number
+  else: 
+    users[0].address.address
+    users[0].address.unit
+    users[0].address.city
+    users[0].address.state
+    users[0].address.zip
+    users[0].phone_number
+    set_actual_phone_number
+  users[0].phone_number
+  user_needs_interpreter
+  other_parties[0].address.address
+  other_parties[0].address.unit
+  other_parties[0].address.city
+  other_parties[0].address.state
+  other_parties[0].address.zip
+  which_role
+  set_parties
+  motion_name
+  #set_users_request triggers requested_information
+  set_users_request
+  courts[0].division
+  docket_numbers[0]
+  signature_date
+  if emergency_basis: 
+    set_emergency_request 
+  # emergency_basis_information
+  # service_by_hand_date
+  if ready_to_serve: 
+    if service_method == "by hand":
+      service_by_hand_date
+    else: 
+      service_by_mailing_date
+    service_by_mail 
+    service_by_hand
+  hearing_city 
+  # Background logic 
+  str(plaintiffs)
+  str(defendants)
+  assign_user_role
+  # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
+  # Comment out the line below if you don't want this behavior. 
+  #mark_unfilled_fields_empty(interview_metadata["Generic_Motion_Family_Law_relabeled0014"])
+  #Generic_Motion_Family_Law_relabeled0014_preview_question # Pre-canned preview screen
+  preview_screen
+  basic_questions_signature_flow
+  users[0].signature
+  users[0].signature
+  Generic_Motion_Family_Law_relabeled0014 = True
+  download
+---
+id: your name
+question:  |
+  Who are you? 
+fields:
+  - Are you a person or business?: users[0].person_type
+    input type: radio
+    choices:
+      - Business or organization: business
+      - Person: individual
+  - First name: users[0].name.first
+    show if:
+      variable: users[0].person_type
+      is: "individual"
+  - Last name: users[0].name.last
+    show if:
+      variable: users[0].person_type      
+      is: "individual"
+  - Suffix: users[0].name.suffix
+    code: |
+      name_suffix()
+    show if:
+      variable: users[0].person_type      
+      is: "individual"
+    required: False      
+  - Name of organization or business: users[0].name.first
+    show if:
+      variable: users[0].person_type
+      is: business
+---
+id: name of oppposing party
+question: |
+  Please list who is on the 'other side' of your case below:
+fields:
+  - Are they a person, or a business?: other_parties[0].person_type
+    input type: radio
+    choices:
+      - Business or organization: business
+      - Person: individual
+  - First name: other_parties[0].name.first
+    show if:
+      variable: other_parties[0].person_type
+      is: "individual"
+  - Last name: other_parties[0].name.last
+    show if:
+      variable: other_parties[0].person_type      
+      is: "individual"
+  - Suffix: other_parties[0].name.suffix
+    code: |
+      name_suffix()
+    show if:
+      variable: other_parties[0].person_type      
+      is: "individual"
+    required: False      
+  - Name of organization or business: other_parties[0].name.first
+    show if:
+      variable: other_parties[0].person_type
+      is: business
+---
+id: User Address
+question: |
+  What is your address?
+subquestion: |
+  Please put in the address the court should use to mail papers to you.
+fields:
+  - Street address: users[0].address.address
+    address autocomplete: True
+  - Unit: users[0].address.unit
+    required: False
+  - City: users[0].address.city
+  - State: users[0].address.state
+    code: |
+      states_list()
+    default: MA      
+  - Zip: users[0].address.zip 
+---
+sets: set_parties 
+scan for variables: False
+code: |
+  if which_role == "plaintiff" or which_role == "petitioner": 
+    user_role = "plaintiff"
+  if which_role == "defendant" or which_role == "respondent": 
+    user_role = "defendant"
+   
+  # set_parties = True must be the very last line of this code block.
+  
+  set_parties = True
+---
+sets: set_emergency_request
+scan for variables: False
+code: |
+  # set_request_emergency = True must be the very last line of this code block. 
+  role_capitalized = capitalize( which_role )
+  emergency_text = "\n" + role_capitalized + " asks that this motion be heard as soon as possible by remote hearing as " + role_capitalized + " has demonstrated exceptional or exigent circumstances, as contemplated by Standing Order 2-20." 
+  users[0].request = users[0].request + emergency_text 
+
+  set_emergency_request = True
+---
+question: |
+  Would you like to request that this motion be heard on an emergency basis?
+yesno: emergency_basis
+subquestion: | 
+  The Probate and Family Courts are physically closed to the public during the COVID-19 crisis. The Courts are only having hearings in a few types of emergency cases right now, including cases with “exceptional” or “exigent” circumstances.  You can read more about what types of cases the courts are deciding right now [here.](https://www.masslegalhelp.org/covid-19-courts/probate-family)
+---
+question: | #impoundment
+  Keeping Your Information Safe
+subquestion:
+  Normally ${ other_parties[0] } will see your address and contact information unless you live in a domestic violence shelter or unless the court has granted a "motion to impound" your address.  
+fields: 
+  - Do you live in a domestic violence shelter? : lives_in_domestic_violence_shelter
+    datatype: yesnoradio
+  - Has the Court granted a motion to impound (keep secret) your address in this case?: impound_address
+    datatype: yesnoradio
+  - Do you need your phone number to be kept secret from ${ other_parties[0] } as well? Your phone number will still be used by the court to contact you.: should_impound_phone_number
+    datatype: yesnoradio
+    js show if: |
+      val("impound_address") || val("lives_in_domestic_violence_shelter")
+---
+sets: set_impoundment_address
+scan for variables: False
+code: | 
+  users[0].address.address = "Address Impounded"
+  users[0].address.city = ""
+  users[0].address.state = ""
+  users[0].address.zip = ""
+  
+
+  # set_impoundment_address must alwasy be at the bottom of the code block. 
+  set_impoundment_address = True 
+---
+sets: set_impoundment_phone_number
+scan for variables: False
+code: | 
+  phone_number_pdf = ""
+  
+
+  # set_impoundment_phone_number must alwasy be at the bottom of the code block. 
+  set_impoundment_phone_number = True 
+--- 
+sets: set_actual_phone_number
+scan for variables: False
+code: | 
+  phone_number_pdf = users[0].phone_numbers()
+
+
+  # set_actual_phone_number must alwasy be at the bottom of the code block. 
+  set_actual_phone_number = True 
+---
+code: |
+  user_attorney = DAEmpty()
+  bbo_number = DAEmpty()
+---
+question: |
+  Court division
+subquestion: |
+  Placeholder text
+fields:
+  - 'Court division': courts[0].division
+  - 'Court division': courts[0].division
+---
+question: |
+  Where and when is your hearing?
+fields:
+  - Hearing City: hearing_city
+    required: False 
+  - Hearing Date: hearing_date_month_day_year
+    datatype: date
+    required: False
+  - Hearing Time: hearing_time
+    datatype: time
+    required: False
+---
+question: |
+  What is the title of this motion?
+fields:
+  - 'Motion for:': motion_name
+---
+question: |
+  Do you know when this motion will be delivered to ${other_parties[0]}?
+yesno: ready_to_serve
+---
+question: |
+  How are you going to deliver it?
+fields:
+  - no label: service_method
+    datatype: radio 
+    choices:
+      - By hand: by hand
+      - By mail: by mail
+---
+question: |
+  Service by mail 
+subquestion: |
+  Explain what date of mail. 
+fields:
+  - 'Date of service by mailing': service_by_mailing_date
+    datatype: date
+---
+question: |
+  Service by hand 
+fields:
+  - 'Date of service by hand': service_by_hand_date
+    datatype: date
+  - 'Time of service by hand': service_by_hand_time
+    datatype: time
+---
+code: |
+  service_by_hand = service_method == "by hand"
+  service_by_mail = service_method == "by mail"
+---
+question: |
+  Tell the Court what you are asking for.  Be as specific as possible.
+subquestion: |
+  For example, “I am asking the Court to give me sole legal and physical custody of my children. I would like the defendant to have parenting time every other weekend from Friday at 6 PM through Monday at 9 AM, with pickup and drop-off at my house. I am also asking for the defendant to pay me child support.”
+fields:
+  - 'What would you like the court to do?': requested_information 
+    input type: area
+    rows: 8
+  - 'Why would you like the court to do this?': requested_reason_to_allow_this_motion
+    input type: area
+    rows: 8
+---
+sets: set_users_request
+scan for variables: False
+code: |
+  # set_users_request = True must be the very last line of this code block. 
+  users[0].request = fix_punctuation(requested_information) + " " + fix_punctuation(requested_reason_to_allow_this_motion)
+
+  set_users_request = True
+---
+id: docket numbers
+question: |
+  What is the docket number for this case?
+subquestion: |
+  If there are multiple docket numbers on this form, you can click "${word("Add another")}"
+  to add more than one.
+list collect: True
+fields:
+  - no label: docket_numbers[i]
+    required: True
+---
+code: |
+  users.ask_number = True 
+  users.target_number = 1
+  other_parties.ask_number = True
+  other_parties.target_number = 1
+  stop_collecting_users = True 
+---
+id: user role
+question: |
+  Are you starting a new case or responding to an existing case?
+subquestion: |
+  If you are starting the case, you are the "Plaintiff"
+  or the "petitioner."
+  
+  If you are responding to a case, you are the "Defendant"
+  or the "respondent."
+fields: 
+  - Which are you?: user_ask_role
+    choices: 
+      - Starting
+      - Responding
+  - Are you the plaintiff or petitioner?: which_role
+    choices: 
+      - Plaintiff: plaintiff 
+      - Petitioner: petitioner 
+    show if:
+      variable: user_ask_role 
+      is: Starting
+  - Are you the defendant or respondent?: which_role
+    choices: 
+      - Defendant: defendant
+      - Respondent: respondent 
+    show if:
+      variable: user_ask_role 
+      is: Responding
+---
+code: |
+  users[0].is_petitioner = which_role == "petitioner"
+  users[0].is_defendant = which_role == "defendant"
+  users[0].is_plaintiff = which_role == "plaintiff"
+  users[0].is_respondent = which_role == "respondent"
+  assign_user_role = True
+---
+event: review_all_sections
+question: |
+  Review of your answers
+subquestion: |
+  
+  ${showifdef('form_to_sign')}
+
+  % if defined('form_delivery_complete'):
+  **Warning: your form has already been delivered.** Any changes you make
+  will _not_ be sent to the court.
+
+  % endif
+  Click a section to revisit the answers from that section.
+
+  % for section in section_links(nav):
+  * ${section}
+  % endfor
+  
+  Press "${word("Resume")}" to resume the
+  interview.
+buttons:
+  ${word("Resume")}: continue
+---
+id: review before signature
+need: form_to_sign
+continue button field: preview_screen
+question: |
+  Nearly finished
+subquestion: |
+  You are almost done! Please click on the form below. It will open in a new window so you can review it and make sure it is correct.
+  
+  Don't forget to come back to this page to click to the final step of signing and sending the form to the court. 
+  
+   ${ form_to_sign }
+
+progress: 95
+---
+id: download form
+event: download
+comment: |
+  The attachment email screen relies on final_form_to_file being defined. This
+  will be built from the interview_metadata dictionary's contents, but if you
+  add any addenda you will want to set this in a code block somewhere that takes
+  priority over basic-questions.yml.
+decoration: file-download
+question: |
+  % if not defined('email_success') or not email_success:
+  Review, Download, and Send Form
+  % else:
+  Form delivered
+  % endif
+subquestion: |
+  % if not defined('email_success') or not email_success:
+  Thank you ${users[0]}. Your form is ready to send to the court. **It is not
+  delivered until you complete the delivery process below.**
+
+  1. Click the preview image below to open the form in a new window. Correct any errors using the "Make changes" button below.
+  1. Download and save or print a copy of this form for your 
+  records.
+  1. Click the "Submit to ${courts[0]}" button to send it to the court. 
+  1. You will have a chance to add instructions to the clerk and see the cover page before final delivery.
+  % else:
+  If you do not hear from the court in 1 business day, call the Trial Court’s
+  Emergency HelpLine 833-91-COURT (833-912-6878).
+  
+  The Emergency HelpLine is open:  
+  8:30am - 4:30pm,   
+  Monday - Friday.
+  % endif
+  
+  ${ form_to_file_no_cover }  
+  
+  ${action_button_html(url_action('review_all_sections'), icon='edit', label=word("Make changes"))}
+  
+  % if not defined('email_success') or not email_success:
+    ${ action_button_html( url_action('form_delivery_complete'), id_tag="submitToCourt", label="Submit to " + str(courts[0].name), icon=send_icon, size="md", color="primary")}
+    
+  Or download/email below:
+  % else:
+    Your email has already been delivered to ${courts[0]}
+    
+  [:file-download: Download with cover page](${final_form_to_file.url_for()})    
+  % endif
+progress: 100
+attachment code: Generic_Motion_Family_Law_relabeled0014_attachment
+section: download
+---
+progress: 100
+mandatory: False
+question: |
+  Placeholder download screen
+subquestion: |
+  Placeholder
+  
+  ### Next steps
+  
+  1. Step 1
+  1. Step 2
+  
+  Below is a preview of your form.
+  
+  ${ Generic_Motion_Family_Law_relabeled0014_attachment }
+attachment code: Generic_Motion_Family_Law_relabeled0014_attachment
+---
+need: Generic_Motion_Family_Law_relabeled0014
+attachment:
+    variable name: Generic_Motion_Family_Law_relabeled0014_attachment
+    name: Generic Motion Family Law
+    filename: Generic_Motion_Family_Law
+    pdf template file: Generic_Motion_Family_Law_re-labeled.pdf
+    skip undefined: True 
+    fields: 
+      - "docket_number": ${ docket_numbers }
+      - "plaintiff": ${ str(plaintiffs) }
+      - "defendant": ${ str(defendants) }
+      - "user_name": ${ str(users[0]) }
+      - "signature_date__1": ${ signature_date }
+      - "user_signature": ${ users[0].signature }
+      - "user_name__2": ${ str(users[0]) }
+      - "user_address_street": ${ users[0].address.line_one() }
+      - "user_address_city": ${ users[0].address.city }
+      - "user_address_state": ${ users[0].address.state }
+      - "user_address_zip": ${ users[0].address.zip }
+      - "user_phone": ${ phone_number_pdf }
+      - "docket_number__2": ${ docket_numbers }
+      - "signature_date__2": ${ signature_date }
+      - "other_party_name": ${ str(other_parties[0]) }
+      - "other_party_address_street": ${ other_parties[0].address.line_one() }
+      - "other_party_address_city": ${ other_parties[0].address.city }
+      - "other_party_address_state": ${ other_parties[0].address.state }
+      - "other_party_address_zip": ${ other_parties[0].address.zip }
+      - "user_signature__2": ${ users[0].signature if ready_to_serve else "" }
+      - "court_division": ${ courts[0].division }
+      - "motion_name": ${ motion_name }
+      - "user_is_petitioner": ${ users[0].is_petitioner }
+      - "user_is_defendant": ${ users[0].is_defendant }
+      - "user_is_plaintiff": ${ users[0].is_plaintiff }
+      - "user_is_respondent": ${ users[0].is_respondent }
+      - "user_request": ${ users[0].request }
+      - "hearing_city": ${ hearing_city }
+      - "hearing_date_month_day_year": ${ hearing_date_month_day_year }
+      - "hearing_time": ${ hearing_time.strftime("%H:%M %p") }
+      - "bbo_number": ${ bbo_number }
+      - "court_division__2": ${ courts[0].division }
+      - "motion_name__2": ${ motion_name }
+      - "service_by_hand_date": ${ service_by_hand_date }
+      - "service_by_hand_time": ${ service_by_hand_time.strftime("%H:%M %p") }
+      - "service_by_hand": ${ service_by_hand }
+      - "service_by_hand_in_pm": ${ service_by_hand_in_pm }
+      - "service_by_hand_in_am": ${ service_by_hand_in_am }
+      - "service_by_mailing_date": ${ service_by_mailing_date }
+      - "service_by_mailing": ${ service_by_mail }
+      - "emergency": ${ "EMERGENCY" if emergency_basis else "" }
+---
+comment: |
+  This question is used to introduce your interview. Please customize
+continue button field: Generic_Motion_Family_Law_relabeled0014_intro
+question: |
+  Probate and Family Court Motion Form 
+subquestion: |
+  You can use this form to file many kinds of motions while your case in the Probate and Family Court is happening. Before you use this form, you must already have a case in the Probate and Family Court.
+---
+continue button field: Generic_Motion_Family_Law_relabeled0014_preview_question
+question: |
+  Placeholder preview screen
+subquestion: |
+  Here is a preview of the form you'll sign on the next page. 
+  
+   ${Generic_Motion_Family_Law_relabeled0014_attachment_preview}
+---
+attachment:
+    variable name: Generic_Motion_Family_Law_relabeled0014_attachment_preview
+    name: Generic Motion Family Law
+    filename: Generic_Motion_Family_Law
+    pdf template file: Generic_Motion_Family_Law_re-labeled.pdf
+    skip undefined: True 
+    fields: 
+      - "docket_number": ${ docket_numbers }
+      - "plaintiff": ${ str(plaintiffs) }
+      - "defendant": ${ str(defendants) }
+      - "user_name": ${ str(users[0]) }
+      - "signature_date__1": ${ signature_date }
+      - "user_name__2": ${ str(users[0]) }
+      - "user_address_street": ${ users[0].address.line_one() }
+      - "user_address_city": ${ users[0].address.city }
+      - "user_address_state": ${ users[0].address.state }
+      - "user_address_zip": ${ users[0].address.zip }
+      - "user_phone": ${ phone_number_pdf }
+      - "docket_number__2": ${ docket_numbers }
+      - "signature_date__2": ${ signature_date }
+      - "other_party_name": ${ str(other_parties[0]) }
+      - "other_party_address_street": ${ other_parties[0].address.line_one() }
+      - "other_party_address_city": ${ other_parties[0].address.city }
+      - "other_party_address_state": ${ other_parties[0].address.state }
+      - "other_party_address_zip": ${ other_parties[0].address.zip }
+      - "court_division": ${ courts[0].division }
+      - "motion_name": ${ motion_name }
+      - "user_is_petitioner": ${ users[0].is_petitioner }
+      - "user_is_defendant": ${ users[0].is_defendant }
+      - "user_is_plaintiff": ${ users[0].is_plaintiff }
+      - "user_is_respondent": ${ users[0].is_respondent }
+      - "user_request": ${ users[0].request }
+      - "hearing_city": ${ hearing_city }
+      - "hearing_date_month_day_year": ${ hearing_date_month_day_year }
+      - "hearing_time": ${ hearing_time.strftime("%H:%M %p") }
+      - "bbo_number": ${ bbo_number }
+      - "court_division__2": ${ courts[0].division }
+      - "motion_name__2": ${ motion_name }
+      - "service_by_hand_date": ${ service_by_hand_date }
+      - "service_by_hand_time": ${ service_by_hand_time.strftime("%H:%M %p") }
+      - "service_by_hand": ${ service_by_hand }
+      - "service_by_hand_in_pm": ${ service_by_hand_in_pm }
+      - "service_by_hand_in_am": ${ service_by_hand_in_am }
+      - "service_by_mailing_date": ${ service_by_mailing_date }
+      - "service_by_mailing": ${ service_by_mail }
+      - "emergency": ${ "EMERGENCY" if emergency_basis else "" }
+
