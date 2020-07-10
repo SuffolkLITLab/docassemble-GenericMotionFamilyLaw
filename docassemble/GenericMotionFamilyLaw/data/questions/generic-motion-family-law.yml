@@ -264,6 +264,10 @@ fields:
     show if:
       variable: users[0].person_type
       is: "individual"
+  - Middle name: users[0].name.middle
+    show if:
+      variable: users[0].person_type
+      is: "individual"
   - Last name: users[0].name.last
     show if:
       variable: users[0].person_type      
@@ -591,10 +595,10 @@ subquestion: |
   delivered until you complete the delivery process below.**
 
   1. Click the preview image below to open the form in a new window. Correct any errors using the "Make changes" button below.
-  1. Download and save or print a copy of this form for your 
+  2. Download and save or print a copy of this form for your 
   records.
-  1. Click the "Submit to ${courts[0]}" button to send it to the court. 
-  1. You will have a chance to add instructions to the clerk and see the cover page before final delivery.
+  3. Click the "Submit to ${courts[0]}" button to send it to the court. 
+  4. You will have a chance to add instructions to the clerk and see the cover page before final delivery.
   % else:
   If you do not hear from the court in 1 business day, call the Trial Court’s
   Emergency HelpLine 833-91-COURT (833-912-6878).
@@ -750,4 +754,5 @@ attachment:
       - "service_by_mailing_date": ${ service_by_mailing_date }
       - "service_by_mailing": ${ service_by_mail }
       - "emergency": ${ "EMERGENCY" if emergency_basis else "" }
+
 
