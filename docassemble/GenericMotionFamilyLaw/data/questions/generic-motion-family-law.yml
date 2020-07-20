@@ -186,7 +186,10 @@ code: |
   # This is a placeholder to control logic flow in this interview
   # It was generated from interview_generator.py as an 'interview order' type question.
   basic_questions_intro_screen 
-  Generic_Motion_Family_Law_relabeled0014_intro
+  if not Generic_Motion_Family_Law_relabeled0014_intro:
+    kick_out_no_existing_case
+  if not court_papers: 
+    kick_out_no_paperwork
   # Set the preferred/allowed courts for this interview
   preferred_court = interview_metadata["Generic_Motion_Family_Law_relabeled0014"]["preferred court"]
   allowed_courts = interview_metadata["Generic_Motion_Family_Law_relabeled0014"]["allowed courts"]
@@ -195,6 +198,7 @@ code: |
   str(other_parties[0])
   if lives_in_domestic_violence_shelter is True or impound_address is True: 
     set_impoundment_address
+    set_impoundment_request
     if should_impound_phone_number is True: 
       set_impoundment_phone_number
     else:
@@ -211,11 +215,14 @@ code: |
     set_actual_phone_number
   users[0].phone_number
   user_needs_interpreter
-  other_parties[0].address.address
-  other_parties[0].address.unit
-  other_parties[0].address.city
-  other_parties[0].address.state
-  other_parties[0].address.zip
+  if op_address_impounded is True: 
+    set_impoundment_request
+  else: 
+    other_parties[0].address.address
+    other_parties[0].address.unit
+    other_parties[0].address.city
+    other_parties[0].address.state
+    other_parties[0].address.zip
   which_role
   set_parties
   motion_name
@@ -228,6 +235,7 @@ code: |
     set_emergency_request 
   # emergency_basis_information
   # service_by_hand_date
+  hearing_city 
   if ready_to_serve: 
     if service_method == "by hand":
       service_by_hand_date
@@ -235,7 +243,6 @@ code: |
       service_by_mailing_date
     service_by_mail 
     service_by_hand
-  hearing_city 
   # Background logic 
   str(plaintiffs)
   str(defendants)
@@ -247,51 +254,74 @@ code: |
   preview_screen
   basic_questions_signature_flow
   users[0].signature
-  users[0].signature
   Generic_Motion_Family_Law_relabeled0014 = True
   download
 ---
-id: your name
-question:  |
-  Who are you? 
-fields:
-  - Are you a person or business?: users[0].person_type
-    input type: radio
-    choices:
-      - Business or organization: business
-      - Person: individual
-  - First name: users[0].name.first
-    show if:
-      variable: users[0].person_type
-      is: "individual"
-  - Middle name: users[0].name.middle
-    show if:
-      variable: users[0].person_type
-      is: "individual"
-  - Last name: users[0].name.last
-    show if:
-      variable: users[0].person_type      
-      is: "individual"
-  - Suffix: users[0].name.suffix
-    code: |
-      name_suffix()
-    show if:
-      variable: users[0].person_type      
-      is: "individual"
-    required: False      
-  - Name of organization or business: users[0].name.first
-    show if:
-      variable: users[0].person_type
-      is: business
+id: Introduction 
+question: |
+  Probate and Family Court Motion Form 
+subquestion: |
+  You can use this form to file many kinds of motions while your case in the Probate and Family Court is happening. Before you use this form, you must already have a case in the Probate and Family Court.
+  
+  Do you have a case in the Probate and Family Court?
+yesno: Generic_Motion_Family_Law_relabeled0014_intro
+---
+id: Kick out screen for no existing case
+event: kick_out_no_existing_case
+question: |
+  Sorry, this form is not for you. 
+subquestion: |
+  You said you do not have a case in the Probate and Family Court. 
+  This form is only for people who have a case that has already
+  started in the Probate and Family Court. 
+  
+  If you want to ask for help, you need to start a new case.
+  
+  For example: 
+  
+  * [Get a domestic violence restraining order](https://massaccess.suffolklitlab.org/dv/)
+  * [Get child support](https://www.masslegalhelp.org/children-and-families/how-to-get-a-child-support-order)
+  * [Ask for a parenting time order](https://www.masslegalhelp.org/children-and-families/parenting-time/getting/complaint)
+  * [Other kinds of orders](https://www.masslegalhelp.org/children-and-families/probate-and-family-court/how-do-I-file)
+buttons:
+  - Exit: exit
+    url: https://massaccess.suffolklitlab.org/
+  - Restart: restart
+---
+id: court papers 
+question: |
+  Do you have all of your court paperwork in front of you to fill 
+  out this form? 
+subquestion: |  
+  You will need the following information to fill out this form: 
+  
+  1. Docket number 
+  2. Court location 
+  3. etc 
+yesno: court_papers
+---
+id: Kick out screen for no paperwork
+event: kick_out_no_paperwork
+question: |
+  Wait to fill out this form until you have your court paperwork in front of you. 
+subquestion: | 
+  Examples of the court paperwork include: 
+   
+  1. Complaint 
+  2. ?? 
+buttons:
+  - Exit: exit
+    url: https://massaccess.suffolklitlab.org/
+  - Restart: restart
 ---
 id: name of oppposing party
 question: |
-  Please list who is on the 'other side' of your case below:
+  Who is on the 'other side' of your case?
 fields:
-  - Are they a person, or a business?: other_parties[0].person_type
+  - Are they a person or business?: other_parties[0].person_type
     input type: radio
     choices:
-      - Business or organization: business
+      - Business, organization, or entity: business
       - Person: individual
   - First name: other_parties[0].name.first
     show if:
@@ -308,7 +338,7 @@ fields:
       variable: other_parties[0].person_type      
       is: "individual"
     required: False      
-  - Name of organization or business: other_parties[0].name.first
+  - Name of business, organization, or entity: other_parties[0].name.first
     show if:
       variable: other_parties[0].person_type
       is: business
@@ -329,6 +359,29 @@ fields:
       states_list()
     default: MA      
   - Zip: users[0].address.zip 
+---
+id: other party address
+generic object: Individual
+question: |
+  What is ${other_parties[0]}'s address?
+fields:
+  - ${other_parties[0]}'s address is impounded.: op_address_impounded
+    datatype: yesno
+  - Street address: other_parties[0].address.address
+    address autocomplete: True
+    hide if: op_address_impounded
+  - Unit: other_parties[0].address.unit
+    required: False
+    hide if: op_address_impounded
+  - City: other_parties[0].address.city
+    hide if: op_address_impounded
+  - State: other_parties[0].address.state
+    default: MA   
+    code: |
+      states_list()   
+    hide if: op_address_impounded
+  - Zip: other_parties[0].address.zip
+    hide if: op_address_impounded
 ---
 sets: set_parties 
 scan for variables: False
@@ -352,25 +405,37 @@ code: |
 
   set_emergency_request = True
 ---
+id: emergency basis request
 question: |
   Would you like to request that this motion be heard on an emergency basis?
 yesno: emergency_basis
 subquestion: | 
-  The Probate and Family Courts are physically closed to the public during the COVID-19 crisis. The Courts are only having hearings in a few types of emergency cases right now, including cases with “exceptional” or “exigent” circumstances.  You can read more about what types of cases the courts are deciding right now [here.](https://www.masslegalhelp.org/covid-19-courts/probate-family)
+  The courthouse may be closed to the public during the COVID-19 crisis. The courthouse may only have hearings in a few types of emergency cases right now, including cases with “exceptional” or “exigent” circumstances.  You can read more about what types of cases the courts are deciding right now [here.](https://www.masslegalhelp.org/covid-19-courts/probate-family)
 ---
-question: | #impoundment
-  Keeping Your Information Safe
+id: impoundment 
+question: |
+  Keeping your information safe
 subquestion:
   Normally ${ other_parties[0] } will see your address and contact information unless you live in a domestic violence shelter or unless the court has granted a "motion to impound" your address.  
 fields: 
   - Do you live in a domestic violence shelter? : lives_in_domestic_violence_shelter
     datatype: yesnoradio
-  - Has the Court granted a motion to impound (keep secret) your address in this case?: impound_address
+  - Has the Court granted a motion to impound your address in this case?: impound_address
     datatype: yesnoradio
-  - Do you need your phone number to be kept secret from ${ other_parties[0] } as well? Your phone number will still be used by the court to contact you.: should_impound_phone_number
+  - Do you need the court to keep your phone number secret from ${ other_parties[0]} as well? The court will still use your phone number to contact you.: should_impound_phone_number
     datatype: yesnoradio
     js show if: |
       val("impound_address") || val("lives_in_domestic_violence_shelter")
+---
+sets: set_impoundment_request
+scan for variables: False
+code: |
+  # set_impoundment_request = True must be the very last line of this code block. 
+  role_capitalized = capitalize( which_role )
+  impoundment_text = "\n" + role_capitalized + " has indicated that some portion of the file has been impounded."
+  comments_to_clerk = comments_to_clerk + impoundment_text
+
+  set_impoundment_request = True
 ---
 sets: set_impoundment_address
 scan for variables: False
@@ -405,17 +470,13 @@ code: |
 code: |
   user_attorney = DAEmpty()
   bbo_number = DAEmpty()
+  
 ---
-question: |
-  Court division
-subquestion: |
-  Placeholder text
-fields:
-  - 'Court division': courts[0].division
-  - 'Court division': courts[0].division
----
+id: hearing information
 question: |
   Where and when is your hearing?
+subquestion: |
+  If you do not already have one, you should call the court you wish to file in to get a hearing date
 fields:
   - Hearing City: hearing_city
     required: False 
@@ -426,17 +487,42 @@ fields:
     datatype: time
     required: False
 ---
+id: motion title 
 question: |
-  What is the title of this motion?
+  What is this motion for?
+subquestion: | 
+  Complete the title below: 
 fields:
   - 'Motion for:': motion_name
+help: 
+  label: | 
+    What do I include?
+  content: |
+    This is the title of the motion. Include something short
+    that explains what you need the judge to do. 
+    
+    Good example: Visitation 
+
+    Bad example: I do not want George to be able to see the
+    children because he is not safe to be around. 
 ---
+id: service information
 question: |
-  Do you know when this motion will be delivered to ${other_parties[0]}?
-yesno: ready_to_serve
+   Serving ${other_parties[0]}
+subquestion:
+  ${other_parties[0]} needs to get a copy of anything you file with the court. Getting the copies to ${other_parties[0]} is called "service." 
+fields: 
+  - Do you know when this motion will be delivered to ${other_parties[0]}?: ready_to_serve
+    datatype: yesnoradio    
 ---
+id: service method
 question: |
-  How are you going to deliver it?
+  How are you going to deliver this motion?
+subquestion: |
+  There are two options for delivering this motion to the other party.
+  
+  1. Mail the motion to the other party. You must mail it at least 10 days before the hearing; or 
+  2. You or a friend can hand the motion to the person you are taking to court.   You or your friend must hand the other party the papers at least 7 days before the hearing.
 fields:
   - no label: service_method
     datatype: radio 
@@ -444,16 +530,20 @@ fields:
       - By hand: by hand
       - By mail: by mail
 ---
+id: service by mail 
 question: |
   Service by mail 
 subquestion: |
-  Explain what date of mail. 
+  You must mail the motion at least 10 days before the hearing.
 fields:
   - 'Date of service by mailing': service_by_mailing_date
     datatype: date
 ---
+id: service by hand
 question: |
   Service by hand 
+subquestion: |
+  You or your friend must hand the other party the papers at least 7 days before the hearing.
 fields:
   - 'Date of service by hand': service_by_hand_date
     datatype: date
@@ -464,6 +554,7 @@ code: |
   service_by_hand = service_method == "by hand"
   service_by_mail = service_method == "by mail"
 ---
+id: user request
 question: |
   Tell the Court what you are asking for.  Be as specific as possible.
 subquestion: |
@@ -507,26 +598,31 @@ question: |
   Are you starting a new case or responding to an existing case?
 subquestion: |
   If you are starting the case, you are the "Plaintiff"
-  or the "petitioner."
+  or the "Petitioner."
   
   If you are responding to a case, you are the "Defendant"
-  or the "respondent."
+  or the "Respondent."
 fields: 
   - Which are you?: user_ask_role
+    input type: radio
     choices: 
       - Starting
       - Responding
   - Are you the plaintiff or petitioner?: which_role
+    input type: radio    
     choices: 
       - Plaintiff: plaintiff 
       - Petitioner: petitioner 
+      - I do not know: plaintiff
     show if:
       variable: user_ask_role 
       is: Starting
   - Are you the defendant or respondent?: which_role
+    input type: radio    
     choices: 
       - Defendant: defendant
-      - Respondent: respondent 
+      - Respondent: respondent
+      - I do not know: defendant
     show if:
       variable: user_ask_role 
       is: Responding
@@ -538,6 +634,7 @@ code: |
   users[0].is_respondent = which_role == "respondent"
   assign_user_role = True
 ---
+id: review 
 event: review_all_sections
 question: |
   Review of your answers
@@ -691,14 +788,6 @@ attachment:
       - "service_by_mailing_date": ${ service_by_mailing_date }
       - "service_by_mailing": ${ service_by_mail }
       - "emergency": ${ "EMERGENCY" if emergency_basis else "" }
----
-comment: |
-  This question is used to introduce your interview. Please customize
-continue button field: Generic_Motion_Family_Law_relabeled0014_intro
-question: |
-  Probate and Family Court Motion Form 
-subquestion: |
-  You can use this form to file many kinds of motions while your case in the Probate and Family Court is happening. Before you use this form, you must already have a case in the Probate and Family Court.
 ---
 continue button field: Generic_Motion_Family_Law_relabeled0014_preview_question
 question: |
