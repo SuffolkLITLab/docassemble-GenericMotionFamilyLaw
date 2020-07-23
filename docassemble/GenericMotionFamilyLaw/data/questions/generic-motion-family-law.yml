@@ -193,13 +193,16 @@ code: |
   # Set the preferred/allowed courts for this interview
   preferred_court = interview_metadata["Generic_Motion_Family_Law_relabeled0014"]["preferred court"]
   allowed_courts = interview_metadata["Generic_Motion_Family_Law_relabeled0014"]["allowed courts"]
+  courts[0].division
+  docket_numbers[0]
+  user_has_hearing_date
   str(users[0])
   stop_collecting_users
   str(other_parties[0])
-  if lives_in_domestic_violence_shelter is True or impound_address is True: 
+  if lives_in_domestic_violence_shelter or impound_address: 
     set_impoundment_address
-    set_impoundment_request
-    if should_impound_phone_number is True: 
+    #set_impoundment_request
+    if should_impound_phone_number: 
       set_impoundment_phone_number
     else:
       users[0].phone_number
@@ -215,9 +218,7 @@ code: |
     set_actual_phone_number
   users[0].phone_number
   user_needs_interpreter
-  if op_address_impounded is True: 
-    set_impoundment_request
-  else: 
+  if not op_address_impounded: 
     other_parties[0].address.address
     other_parties[0].address.unit
     other_parties[0].address.city
@@ -228,21 +229,10 @@ code: |
   motion_name
   #set_users_request triggers requested_information
   set_users_request
-  courts[0].division
-  docket_numbers[0]
-  signature_date
   if emergency_basis: 
-    set_emergency_request 
-  # emergency_basis_information
-  # service_by_hand_date
-  hearing_city 
-  if ready_to_serve: 
-    if service_method == "by hand":
-      service_by_hand_date
-    else: 
-      service_by_mailing_date
-    service_by_mail 
-    service_by_hand
+    set_emergency_request  
+  if not op_address_impounded:
+    ready_to_serve
   # Background logic 
   str(plaintiffs)
   str(defendants)
@@ -254,6 +244,9 @@ code: |
   preview_screen
   basic_questions_signature_flow
   users[0].signature
+  #if lives_in_domestic_violence_shelter or impound_address or op_address_impounded: 
+    #set_impoundment_request
+  signature_date = today()
   Generic_Motion_Family_Law_relabeled0014 = True
   download
 ---
@@ -261,7 +254,9 @@ id: Introduction
 question: |
   Probate and Family Court Motion Form 
 subquestion: |
-  You can use this form to file many kinds of motions while your case in the Probate and Family Court is happening. Before you use this form, you must already have a case in the Probate and Family Court.
+  You can use this form to file many kinds of motions while your case is in the Probate and Family Court.  
+  
+  Before you use this interview, you must already have a case in the Probate and Family Court.
   
   Do you have a case in the Probate and Family Court?
 yesno: Generic_Motion_Family_Law_relabeled0014_intro
@@ -269,20 +264,19 @@ yesno: Generic_Motion_Family_Law_relabeled0014_intro
 id: Kick out screen for no existing case
 event: kick_out_no_existing_case
 question: |
-  Sorry, this form is not for you. 
+  Sorry, this form is not for you 
 subquestion: |
   You said you do not have a case in the Probate and Family Court. 
-  This form is only for people who have a case that has already
-  started in the Probate and Family Court. 
+  This interview is only for people who already have a case in the Probate and Family Court. 
   
-  If you want to ask for help, you need to start a new case.
+  If you need to ask the court for help, you need to start a new case.
   
   For example: 
   
-  * [Get a domestic violence restraining order](https://massaccess.suffolklitlab.org/dv/)
-  * [Get child support](https://www.masslegalhelp.org/children-and-families/how-to-get-a-child-support-order)
-  * [Ask for a parenting time order](https://www.masslegalhelp.org/children-and-families/parenting-time/getting/complaint)
-  * [Other kinds of orders](https://www.masslegalhelp.org/children-and-families/probate-and-family-court/how-do-I-file)
+  * [Get a domestic violence restraining order](https://massaccess.suffolklitlab.org/dv/).
+  * [Get Child Support](https://www.masslegalhelp.org/children-and-families/how-to-get-a-child-support-order).
+  * [Ask for a Parenting Time Order](https://www.masslegalhelp.org/children-and-families/parenting-time/getting/complaint).
+  * [Other kinds of orders](https://www.masslegalhelp.org/children-and-families/probate-and-family-court/how-do-I-file).
 buttons:
   - Exit: exit
     url: https://massaccess.suffolklitlab.org/
@@ -290,31 +284,27 @@ buttons:
 ---
 id: court papers 
 question: |
-  Do you have all of your court paperwork in front of you to fill 
-  out this form? 
+  Do you know the court name and your docket number? 
 subquestion: |  
-  You will need the following information to fill out this form: 
-  
-  1. Docket number 
-  2. Court location 
-  3. etc 
+  You can find this information on the Complaint or other court paperwork.
 yesno: court_papers
 ---
 id: Kick out screen for no paperwork
 event: kick_out_no_paperwork
 question: |
-  Wait to fill out this form until you have your court paperwork in front of you. 
+  Wait to fill out this form until you know the court name and your docket number
 subquestion: | 
-  Examples of the court paperwork include: 
+  You can find this information on the: 
    
-  1. Complaint 
-  2. ?? 
+  * Complaint,
+  * Summons, or
+  * Other motions in this case.
 buttons:
   - Exit: exit
     url: https://massaccess.suffolklitlab.org/
   - Restart: restart
 ---
-id: name of oppposing party
+id: name of opposing party
 question: |
   Who is on the 'other side' of your case?
 fields:
@@ -347,7 +337,7 @@ id: User Address
 question: |
   What is your address?
 subquestion: |
-  Please put in the address the court should use to mail papers to you.
+  Put in the address the Court should use to mail papers to you.
 fields:
   - Street address: users[0].address.address
     address autocomplete: True
@@ -363,9 +353,9 @@ fields:
 id: other party address
 generic object: Individual
 question: |
-  What is ${other_parties[0]}'s address?
+  What is ${ other_parties[0].familiar() }'s address?
 fields:
-  - ${other_parties[0]}'s address is impounded.: op_address_impounded
+  - ${ other_parties[0].familiar() }'s address is impounded.: op_address_impounded
     datatype: yesno
   - Street address: other_parties[0].address.address
     address autocomplete: True
@@ -407,35 +397,42 @@ code: |
 ---
 id: emergency basis request
 question: |
-  Would you like to request that this motion be heard on an emergency basis?
+  Is this an emergency?
 yesno: emergency_basis
 subquestion: | 
-  The courthouse may be closed to the public during the COVID-19 crisis. The courthouse may only have hearings in a few types of emergency cases right now, including cases with “exceptional” or “exigent” circumstances.  You can read more about what types of cases the courts are deciding right now [here.](https://www.masslegalhelp.org/covid-19-courts/probate-family)
+  During the COVID-19 crisis, the courts are only hearing some cases. 
+  
+  Emergencies will get priority. 
+    
+  Read more about [the cases the Court is hearing right now](https://www.masslegalhelp.org/covid-19-courts/probate-family).
 ---
 id: impoundment 
 question: |
   Keeping your information safe
 subquestion:
-  Normally ${ other_parties[0] } will see your address and contact information unless you live in a domestic violence shelter or unless the court has granted a "motion to impound" your address.  
+  Normally ${ other_parties[0].familiar() } will see your address and contact information.
+  But if you live in a domestic violence shelter or if the court granted a Motion to Impound your address, ${ other_parties[0].familiar() } will not be able to see your information. 
 fields: 
   - Do you live in a domestic violence shelter? : lives_in_domestic_violence_shelter
     datatype: yesnoradio
-  - Has the Court granted a motion to impound your address in this case?: impound_address
+  - Did the Court grant a Motion to Impound your address in this case?: impound_address
     datatype: yesnoradio
-  - Do you need the court to keep your phone number secret from ${ other_parties[0]} as well? The court will still use your phone number to contact you.: should_impound_phone_number
+  - Do you need the Court to keep your phone number from ${ other_parties[0].familiar() } also?: should_impound_phone_number
     datatype: yesnoradio
+    note: |
+      The Court will still use your phone number to contact you.
     js show if: |
       val("impound_address") || val("lives_in_domestic_violence_shelter")
----
-sets: set_impoundment_request
-scan for variables: False
-code: |
-  # set_impoundment_request = True must be the very last line of this code block. 
-  role_capitalized = capitalize( which_role )
-  impoundment_text = "\n" + role_capitalized + " has indicated that some portion of the file has been impounded."
-  comments_to_clerk = comments_to_clerk + impoundment_text
-
-  set_impoundment_request = True
+#---
+#sets: set_impoundment_request
+#scan for variables: False
+#code: |
+#  # set_impoundment_request = True must be the very last line of this code block. 
+#  role_capitalized = capitalize( which_role )
+#  impoundment_text = "\n" + role_capitalized + " has indicated that some portion of the file has been impounded."
+#  comments_to_clerk = comments_to_clerk + impoundment_text
+#
+#  set_impoundment_request = True
 ---
 sets: set_impoundment_address
 scan for variables: False
@@ -469,103 +466,84 @@ code: |
 ---
 code: |
   user_attorney = DAEmpty()
-  bbo_number = DAEmpty()
-  
+  bbo_number = DAEmpty()  
 ---
 id: hearing information
 question: |
-  Where and when is your hearing?
-subquestion: |
-  If you do not already have one, you should call the court you wish to file in to get a hearing date
+  Do you have a hearing date?    
 fields:
+  - no label: user_has_hearing_date
+    datatype: yesnoradio 
   - Hearing City: hearing_city
     required: False 
+    show if: user_has_hearing_date
   - Hearing Date: hearing_date_month_day_year
     datatype: date
     required: False
+    show if: user_has_hearing_date
   - Hearing Time: hearing_time
     datatype: time
     required: False
+    show if: user_has_hearing_date
 ---
 id: motion title 
 question: |
   What is this motion for?
-subquestion: | 
-  Complete the title below: 
+subquestion: |  
+    This will be the name of the motion. Name the motion something short that explains what you need the judge to do. 
+    
+    Helpful example: Visitation 
+
+    Not so helpful example: I do not want George to be able to see the children because he is not safe to be around. 
 fields:
   - 'Motion for:': motion_name
-help: 
-  label: | 
-    What do I include?
-  content: |
-    This is the title of the motion. Include something short
-    that explains what you need the judge to do. 
-    
-    Good example: Visitation 
-
-    Bad example: I do not want George to be able to see the
-    children because he is not safe to be around. 
 ---
 id: service information
 question: |
-   Serving ${other_parties[0]}
+   Will you be able to mail a copy of this motion to ${ other_parties[0].familiar() } immediately upon completing this form?
 subquestion:
-  ${other_parties[0]} needs to get a copy of anything you file with the court. Getting the copies to ${other_parties[0]} is called "service." 
-fields: 
-  - Do you know when this motion will be delivered to ${other_parties[0]}?: ready_to_serve
-    datatype: yesnoradio    
----
-id: service method
-question: |
-  How are you going to deliver this motion?
-subquestion: |
-  There are two options for delivering this motion to the other party.
+  Getting a copy of this motion to ${ other_parties[0].familiar() } is called "service."  
   
-  1. Mail the motion to the other party. You must mail it at least 10 days before the hearing; or 
-  2. You or a friend can hand the motion to the person you are taking to court.   You or your friend must hand the other party the papers at least 7 days before the hearing.
-fields:
-  - no label: service_method
-    datatype: radio 
-    choices:
-      - By hand: by hand
-      - By mail: by mail
----
-id: service by mail 
-question: |
-  Service by mail 
-subquestion: |
-  You must mail the motion at least 10 days before the hearing.
-fields:
+  You must do service by getting ${ other_parties[0].familiar() } a copy of this motion. 
+   
+fields: 
+  - no label: ready_to_serve
+    datatype: yesnoradio  
   - 'Date of service by mailing': service_by_mailing_date
     datatype: date
+    default: ${today().format("MM-dd-yyyy")}
+    show if: ready_to_serve
+  - note: |
+      You will need to discuss service with the clerk who will call you by the end of the next business day after you submit this form.
+    js show if: |
+      ! val("ready_to_serve") 
 ---
-id: service by hand
+id: not ready to serve
 question: |
-  Service by hand 
-subquestion: |
-  You or your friend must hand the other party the papers at least 7 days before the hearing.
-fields:
-  - 'Date of service by hand': service_by_hand_date
-    datatype: date
-  - 'Time of service by hand': service_by_hand_time
-    datatype: time
----
-code: |
-  service_by_hand = service_method == "by hand"
-  service_by_mail = service_method == "by mail"
+  You will need to discuss service with the clerk who will call you by the end of the next business day after you submit this form
+
+buttons:
+  - Continue: continue
 ---
 id: user request
 question: |
-  Tell the Court what you are asking for.  Be as specific as possible.
+  Tell the Court what you are asking for
 subquestion: |
-  For example, “I am asking the Court to give me sole legal and physical custody of my children. I would like the defendant to have parenting time every other weekend from Friday at 6 PM through Monday at 9 AM, with pickup and drop-off at my house. I am also asking for the defendant to pay me child support.”
+  Be as specific as possible. See examples below.
 fields:
-  - 'What would you like the court to do?': requested_information 
+  - 'What do you need the Court to order?': requested_information 
     input type: area
     rows: 8
-  - 'Why would you like the court to do this?': requested_reason_to_allow_this_motion
+  - 'Why do you need the Court to make this order?': requested_reason_to_allow_this_motion
     input type: area
     rows: 8
+help:
+  label: |
+    Examples
+  content: |
+    Example what: “I need the Court to give me sole legal and physical custody of my children. I need the defendant to have Parenting Time every other weekend from Friday at 6 PM to Monday at 9 AM, with pickup and drop-off at my house. I also ask that the Court order the defendant to pay me child support.”
+    
+    Example why: "I need the Court to make this order because I have always taken care of our children most of the time. I have gone to all of their doctor's appointments and parent-teacher conferences. The defendant usually just sees the children once every couple of weeks so I should be the one to have custody."
 ---
 sets: set_users_request
 scan for variables: False
@@ -595,19 +573,14 @@ code: |
 ---
 id: user role
 question: |
-  Are you starting a new case or responding to an existing case?
-subquestion: |
-  If you are starting the case, you are the "Plaintiff"
-  or the "Petitioner."
-  
-  If you are responding to a case, you are the "Defendant"
-  or the "Respondent."
+  Did you start this case, or are you responding to a case
+  that ${ other_parties[0].familiar() } started?
 fields: 
-  - Which are you?: user_ask_role
+  - no label: user_ask_role
     input type: radio
     choices: 
-      - Starting
-      - Responding
+      - I am starting this case. 
+      - I am responding to this case.
   - Are you the plaintiff or petitioner?: which_role
     input type: radio    
     choices: 
@@ -616,7 +589,7 @@ fields:
       - I do not know: plaintiff
     show if:
       variable: user_ask_role 
-      is: Starting
+      is: I am starting this case.
   - Are you the defendant or respondent?: which_role
     input type: radio    
     choices: 
@@ -625,7 +598,16 @@ fields:
       - I do not know: defendant
     show if:
       variable: user_ask_role 
-      is: Responding
+      is: I am responding in this case.
+help:
+  label: |
+    How do I know?
+  content: |
+    If you are the first person to file a form in the case, you 
+    started the case. You are the "Plaintiff" or the "Petitioner."
+  
+    If you are responding to a case or court papers someone else filed, you
+    are the "Defendant" or the "Respondent."
 ---
 code: |
   users[0].is_petitioner = which_role == "petitioner"
@@ -786,7 +768,7 @@ attachment:
       - "service_by_hand_in_pm": ${ service_by_hand_in_pm }
       - "service_by_hand_in_am": ${ service_by_hand_in_am }
       - "service_by_mailing_date": ${ service_by_mailing_date }
-      - "service_by_mailing": ${ service_by_mail }
+      - "service_by_mailing": ${ ready_to_serve }
       - "emergency": ${ "EMERGENCY" if emergency_basis else "" }
 ---
 continue button field: Generic_Motion_Family_Law_relabeled0014_preview_question
@@ -841,7 +823,7 @@ attachment:
       - "service_by_hand_in_pm": ${ service_by_hand_in_pm }
       - "service_by_hand_in_am": ${ service_by_hand_in_am }
       - "service_by_mailing_date": ${ service_by_mailing_date }
-      - "service_by_mailing": ${ service_by_mail }
+      - "service_by_mailing": ${ ready_to_serve }
       - "emergency": ${ "EMERGENCY" if emergency_basis else "" }
 
 
