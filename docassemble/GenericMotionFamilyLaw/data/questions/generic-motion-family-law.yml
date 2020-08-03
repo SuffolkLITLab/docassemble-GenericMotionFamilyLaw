@@ -292,13 +292,27 @@ yesno: court_papers
 id: Kick out screen for no paperwork
 event: kick_out_no_paperwork
 question: |
-  Wait to fill out this form until you know the court name and your docket number
+  Wait to fill out this form until you know the court name and your docket number. 
 subquestion: | 
-  You can find this information on the: 
-   
-  * Complaint,
-  * Summons, or
-  * Other motions in this case.
+  If you know the Court that your case is being heard in, call the Court for this information.
+  
+  If you do not know the Court that your case is being heard in, follow these steps: 
+  
+  1. Go to [Mass Courts](Masscourts.org).
+  
+  2. Select “Click Here” in the bottom left-hand corner of the screen.
+  
+  3. Under “Court Department” choose "Probate and Family Court."
+  
+  4. Under “Court Division,” select the county that the case is being heard in. There is no need to select or change the “number of results" tab.
+  
+  5. Fill out your First and Last Name or Company Name, if applicable. There is no need to select a "Birth Date" or "Filing date" option.
+  
+  6. Select “Search.”
+  
+  7. Your court case should appear. 
+  
+  8. Select your court case and find the information you will need to complete this interview. 
 buttons:
   - Exit: exit
     url: https://massaccess.suffolklitlab.org/
@@ -475,15 +489,15 @@ fields:
   - no label: user_has_hearing_date
     datatype: yesnoradio 
   - Hearing City: hearing_city
-    required: False 
+    required: True 
     show if: user_has_hearing_date
   - Hearing Date: hearing_date_month_day_year
     datatype: date
-    required: False
+    required: True
     show if: user_has_hearing_date
   - Hearing Time: hearing_time
     datatype: time
-    required: False
+    required: True
     show if: user_has_hearing_date
 ---
 id: motion title 
@@ -516,7 +530,7 @@ fields:
   - note: |
       You will need to discuss service with the clerk who will call you by the end of the next business day after you submit this form.
     js show if: |
-      ! val("ready_to_serve") 
+      ! val("ready_to_serve")
 ---
 id: not ready to serve
 question: |
@@ -598,7 +612,7 @@ fields:
       - I do not know: defendant
     show if:
       variable: user_ask_role 
-      is: I am responding in this case.
+      is: I am responding to this case.
 help:
   label: |
     How do I know?
@@ -616,30 +630,6 @@ code: |
   users[0].is_respondent = which_role == "respondent"
   assign_user_role = True
 ---
-id: review 
-event: review_all_sections
-question: |
-  Review of your answers
-subquestion: |
-  
-  ${showifdef('form_to_sign')}
-
-  % if defined('form_delivery_complete'):
-  **Warning: your form has already been delivered.** Any changes you make
-  will _not_ be sent to the court.
-
-  % endif
-  Click a section to revisit the answers from that section.
-
-  % for section in section_links(nav):
-  * ${section}
-  % endfor
-  
-  Press "${word("Resume")}" to resume the
-  interview.
-buttons:
-  ${word("Resume")}: continue
----
 id: review before signature
 need: form_to_sign
 continue button field: preview_screen
@@ -656,6 +646,9 @@ progress: 95
 ---
 id: download form
 event: download
+reconsider:
+  - form_to_file_no_cover
+  - Generic_Motion_Family_Law_relabeled0014_attachment
 comment: |
   The attachment email screen relies on final_form_to_file being defined. This
   will be built from the interview_metadata dictionary's contents, but if you
@@ -703,6 +696,100 @@ subquestion: |
 progress: 100
 attachment code: Generic_Motion_Family_Law_relabeled0014_attachment
 section: download
+---
+id: review info 
+event: review_all_sections
+reconsider:
+  - form_to_file_no_cover
+  - Generic_Motion_Family_Law_relabeled0014_attachment
+question: |
+  Review information
+review:
+  - note: | 
+      ### About you, ${ users[0].name }: 
+  - Edit your name: users[0].name.first
+    button: |
+      Your name:[BR]  
+      ${ users[0].name } 
+  - Edit your address: users[0].address.address
+    button: |
+      Your address:[BR] 
+      ${ users[0].address }  
+  - Edit your contact information: users[0].phone_number
+    button: |
+      Your contact information:[BR] 
+      ${ users[0].mobile_number }[BR]
+      ${ users[0].phone_number }[BR]
+      ${ users[0].email }[BR] 
+      ${ users[0].other_contact_method } 
+  - Edit your impoundment details: lives_in_domestic_violence_shelter
+    button: |
+      Impound address: ${ "Yes" if lives_in_domestic_violence_shelter or impound_address else "No" } 
+      
+      Impound phone number: ${ "Yes" if should_impound_phone_number else "No" }   
+  - Edit your interpreter selection: user_needs_interpreter
+    button: |
+      Needs interpreter: ${ "Yes" if user_needs_interpreter else "No" }[BR]
+  - Edit your preferred language: user_preferred_language 
+    show if: user_needs_interpreter
+    button: |
+      Preferred language:[BR] 
+      ${ capitalize( user_preferred_language ) }
+  - note: | 
+      ### About ${ other_parties[0] }: 
+  - Edit other party's name: other_parties[0].name.first
+    button: |
+      Other party's name:[BR]  
+      ${ other_parties[0] }
+  - Edit other party's address: op_address_impounded
+    button: |
+      Other party's address:[BR] 
+      % if op_address_impounded:
+      Impounded 
+      % else:
+      ${ other_parties[0].address }
+      % endif
+  - note: | 
+      ### Your court information: 
+  - Edit court: courts[0]
+    button: |
+      Court: ${ courts[0] }
+  - Edit docket number: docket_numbers[0]
+    button: |
+      Docket number: ${ docket_numbers }
+  - Edit hearing details: user_has_hearing_date
+    button: |
+      Hearing city: ${ None if not user_has_hearing_date else hearing_city }[BR]
+      Hearing date: ${ None if not user_has_hearing_date else hearing_date_month_day_year }[BR]
+      Hearing time: ${ None if not user_has_hearing_date else hearing_time }
+  - note: | 
+      ### About your motion: 
+  - Edit filing posture: which_role
+    button: |
+      Filing as: ${ capitalize( which_role ) }
+  - Edit emergency basis: emergency_basis
+    button: |
+      Emergency basis: ${ "No" if not emergency_basis else "Yes" }
+  - Edit your motion title: motion_name
+    button: |
+      Your motion title:[BR] 
+      Motion for ${ motion_name }
+  - Edit motion reason: requested_information
+    button: |
+      Motion reason:
+      
+      ${ requested_information }
+      ${ requested_reason_to_allow_this_motion }
+  - note: | 
+      ### Your service information:   
+  - Edit service details: ready_to_serve
+    button: |
+      Ready to serve: ${ "Yes" if ready_to_serve else "No" }
+  - Edit service by mail date: service_by_mailing_date
+    show if: ready_to_serve
+    button: |
+      Service by mail date:[BR] 
+      ${ service_by_mailing_date }
 ---
 progress: 100
 mandatory: False
@@ -825,5 +912,4 @@ attachment:
       - "service_by_mailing_date": ${ service_by_mailing_date }
       - "service_by_mailing": ${ ready_to_serve }
       - "emergency": ${ "EMERGENCY" if emergency_basis else "" }
-
 
