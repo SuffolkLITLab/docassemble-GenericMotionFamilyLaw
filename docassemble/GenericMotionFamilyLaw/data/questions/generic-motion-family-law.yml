@@ -200,7 +200,8 @@ code: |
   stop_collecting_users
   str(other_parties[0])
   if lives_in_domestic_violence_shelter or impound_address: 
-    set_impoundment_address
+    address_is_impounded = True
+    #set_impoundment_address
     #set_impoundment_request
     if should_impound_phone_number: 
       set_impoundment_phone_number
@@ -215,7 +216,8 @@ code: |
     users[0].address.state
     users[0].address.zip
     users[0].phone_number
-    set_actual_phone_number
+    should_impound_phone_number = False
+    address_is_impounded = False
   users[0].phone_number
   user_needs_interpreter
   if not op_address_impounded: 
@@ -224,6 +226,9 @@ code: |
     other_parties[0].address.city
     other_parties[0].address.state
     other_parties[0].address.zip
+    op_address_is_impounded_flag = False
+  else: 
+    op_address_is_impounded_flag = True    
   which_role
   set_parties
   motion_name
@@ -249,6 +254,18 @@ code: |
   signature_date = today()
   Generic_Motion_Family_Law_relabeled0014 = True
   download
+---
+code: |
+  if lives_in_domestic_violence_shelter or impound_address: 
+    address_is_impounded = True
+  else: 
+    address_is_impounded = False
+---
+code: |
+  if op_address_impounded:
+    op_address_is_impounded_flag = True 
+  else: 
+    op_address_is_impounded_flag = False
 ---
 id: Introduction 
 question: |
@@ -396,7 +413,6 @@ code: |
     user_role = "defendant"
    
   # set_parties = True must be the very last line of this code block.
-  
   set_parties = True
 ---
 sets: set_emergency_request
@@ -628,6 +644,7 @@ code: |
   users[0].is_defendant = which_role == "defendant"
   users[0].is_plaintiff = which_role == "plaintiff"
   users[0].is_respondent = which_role == "respondent"
+  
   assign_user_role = True
 ---
 id: review before signature
@@ -711,10 +728,13 @@ review:
     button: |
       Your name:[BR]  
       ${ users[0].name } 
-  - Edit your address: users[0].address.address
+  - Edit your address: 
+     - users[0].address.address
+     - recompute: 
+         - address_is_impounded
     button: |
       Your address:[BR] 
-      ${ users[0].address }  
+      ${ "Address Impounded" if address_is_impounded else users[0].address } 
   - Edit your contact information: users[0].phone_number
     button: |
       Your contact information:[BR] 
@@ -741,14 +761,13 @@ review:
     button: |
       Other party's name:[BR]  
       ${ other_parties[0] }
-  - Edit other party's address: op_address_impounded
+  - Edit other party's address: 
+     - op_address_impounded
+     - recompute: 
+         - op_address_is_impounded_flag
     button: |
       Other party's address:[BR] 
-      % if op_address_impounded:
-      Impounded 
-      % else:
-      ${ other_parties[0].address }
-      % endif
+      ${ "Address Impounded" if op_address_is_impounded_flag else other_parties[0].address } 
   - note: | 
       ### Your court information: 
   - Edit court: courts[0]
@@ -764,7 +783,13 @@ review:
       Hearing time: ${ None if not user_has_hearing_date else hearing_time }
   - note: | 
       ### About your motion: 
-  - Edit filing posture: which_role
+  - Edit filing posture:
+     - which_role
+     - recompute:
+         - assign_user_role
+         - plaintiffs
+         - defendants
+         - set_parties
     button: |
       Filing as: ${ capitalize( which_role ) }
   - Edit emergency basis: emergency_basis
@@ -784,9 +809,10 @@ review:
       ### Your service information:   
   - Edit service details: ready_to_serve
     button: |
-      Ready to serve: ${ "Yes" if ready_to_serve else "No" }
-  - Edit service by mail date: service_by_mailing_date
-    show if: ready_to_serve
+      Ready to serve: ${ "Yes" if not op_address_is_impounded_flag else "No" }
+  - Edit service by mail date: 
+     - service_by_mailing_date
+    show if: ready_to_serve and not op_address_is_impounded_flag
     button: |
       Service by mail date:[BR] 
       ${ service_by_mailing_date }
@@ -809,6 +835,15 @@ subquestion: |
 attachment code: Generic_Motion_Family_Law_relabeled0014_attachment
 ---
 need: Generic_Motion_Family_Law_relabeled0014
+reconsider: 
+  - set_parties
+  - assign_user_role
+  - plaintiffs
+  - defendants
+  - set_users_request
+  - set_emergency_request
+  - address_is_impounded
+  - op_address_is_impounded_flag
 attachment:
     variable name: Generic_Motion_Family_Law_relabeled0014_attachment
     name: Generic Motion Family Law
@@ -823,18 +858,18 @@ attachment:
       - "signature_date__1": ${ signature_date }
       - "user_signature": ${ users[0].signature }
       - "user_name__2": ${ str(users[0]) }
-      - "user_address_street": ${ users[0].address.line_one() }
-      - "user_address_city": ${ users[0].address.city }
-      - "user_address_state": ${ users[0].address.state }
-      - "user_address_zip": ${ users[0].address.zip }
-      - "user_phone": ${ phone_number_pdf }
+      - "user_address_street": ${ "Address Impounded" if address_is_impounded else users[0].address.line_one() }
+      - "user_address_city": ${ "" if address_is_impounded else users[0].address.city }
+      - "user_address_state": ${ "" if address_is_impounded else users[0].address.state }
+      - "user_address_zip": ${ "" if address_is_impounded else users[0].address.zip }
+      - "user_phone": ${ users[0].phone_numbers() if not should_impound_phone_number else "" }
       - "docket_number__2": ${ docket_numbers }
       - "signature_date__2": ${ signature_date }
       - "other_party_name": ${ str(other_parties[0]) }
-      - "other_party_address_street": ${ other_parties[0].address.line_one() }
-      - "other_party_address_city": ${ other_parties[0].address.city }
-      - "other_party_address_state": ${ other_parties[0].address.state }
-      - "other_party_address_zip": ${ other_parties[0].address.zip }
+      - "other_party_address_street": ${ "Address Impounded" if op_address_is_impounded_flag else other_parties[0].address.line_one() }
+      - "other_party_address_city": ${ "" if op_address_is_impounded_flag else other_parties[0].address.city }
+      - "other_party_address_state": ${ "" if op_address_is_impounded_flag else other_parties[0].address.state }
+      - "other_party_address_zip": ${ "" if op_address_is_impounded_flag else other_parties[0].address.zip }
       - "user_signature__2": ${ users[0].signature if ready_to_serve else "" }
       - "court_division": ${ courts[0].division }
       - "motion_name": ${ motion_name }
@@ -854,8 +889,8 @@ attachment:
       - "service_by_hand": ${ service_by_hand }
       - "service_by_hand_in_pm": ${ service_by_hand_in_pm }
       - "service_by_hand_in_am": ${ service_by_hand_in_am }
-      - "service_by_mailing_date": ${ service_by_mailing_date }
-      - "service_by_mailing": ${ ready_to_serve }
+      - "service_by_mailing_date": ${ service_by_mailing_date if not op_address_is_impounded_flag and ready_to_serve else "" }
+      - "service_by_mailing": ${ ready_to_serve if not op_address_is_impounded_flag else "" }
       - "emergency": ${ "EMERGENCY" if emergency_basis else "" }
 ---
 continue button field: Generic_Motion_Family_Law_relabeled0014_preview_question
@@ -866,6 +901,15 @@ subquestion: |
   
    ${Generic_Motion_Family_Law_relabeled0014_attachment_preview}
 ---
+reconsider: 
+  - set_parties
+  - assign_user_role
+  - plaintiffs
+  - defendants
+  - set_users_request
+  - set_emergency_request
+  - address_is_impounded
+  - op_address_is_impounded_flag
 attachment:
     variable name: Generic_Motion_Family_Law_relabeled0014_attachment_preview
     name: Generic Motion Family Law
@@ -879,18 +923,18 @@ attachment:
       - "user_name": ${ str(users[0]) }
       - "signature_date__1": ${ signature_date }
       - "user_name__2": ${ str(users[0]) }
-      - "user_address_street": ${ users[0].address.line_one() }
-      - "user_address_city": ${ users[0].address.city }
-      - "user_address_state": ${ users[0].address.state }
-      - "user_address_zip": ${ users[0].address.zip }
-      - "user_phone": ${ phone_number_pdf }
+      - "user_address_street": ${ "Address Impounded" if address_is_impounded else users[0].address.line_one() }
+      - "user_address_city": ${ "" if address_is_impounded else users[0].address.city }
+      - "user_address_state": ${ "" if address_is_impounded else users[0].address.state }
+      - "user_address_zip": ${ "" if address_is_impounded else users[0].address.zip }
+      - "user_phone": ${ users[0].phone_numbers() if not should_impound_phone_number else "" }
       - "docket_number__2": ${ docket_numbers }
       - "signature_date__2": ${ signature_date }
       - "other_party_name": ${ str(other_parties[0]) }
-      - "other_party_address_street": ${ other_parties[0].address.line_one() }
-      - "other_party_address_city": ${ other_parties[0].address.city }
-      - "other_party_address_state": ${ other_parties[0].address.state }
-      - "other_party_address_zip": ${ other_parties[0].address.zip }
+      - "other_party_address_street": ${ "Address Impounded" if op_address_is_impounded_flag else other_parties[0].address.line_one() }
+      - "other_party_address_city": ${ "" if op_address_is_impounded_flag else other_parties[0].address.city }
+      - "other_party_address_state": ${ "" if op_address_is_impounded_flag else other_parties[0].address.state }
+      - "other_party_address_zip": ${ "" if op_address_is_impounded_flag else other_parties[0].address.zip }
       - "court_division": ${ courts[0].division }
       - "motion_name": ${ motion_name }
       - "user_is_petitioner": ${ users[0].is_petitioner }
@@ -909,7 +953,7 @@ attachment:
       - "service_by_hand": ${ service_by_hand }
       - "service_by_hand_in_pm": ${ service_by_hand_in_pm }
       - "service_by_hand_in_am": ${ service_by_hand_in_am }
-      - "service_by_mailing_date": ${ service_by_mailing_date }
-      - "service_by_mailing": ${ ready_to_serve }
+      - "service_by_mailing_date": ${ service_by_mailing_date if not op_address_is_impounded_flag and ready_to_serve else "" }
+      - "service_by_mailing": ${ ready_to_serve if not op_address_is_impounded_flag else "" }
       - "emergency": ${ "EMERGENCY" if emergency_basis else "" }
 
