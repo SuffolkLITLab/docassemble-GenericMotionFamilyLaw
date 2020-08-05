@@ -250,24 +250,76 @@ code: |
   Generic_Motion_Family_Law_relabeled0014 = True
   download
 ---
+#d: basic questions intro screen
+#uestion: |
+# Ask the court for a Temporary Order: Mass Access Project
+#ubquestion: |
+#
+# This website can help you complete and file your court form in 3 steps:
+# 
+# Step 1. Answer questions that fill in your form for you.  
+# Step 2. Preview the completed form.  
+# Step 3. Email the form to yourself or download it so you can send the form to the court.  
+# Tap the {green words} in any screen for a definition or more information.
+# 
+# If you have questions about this form or the court process, 
+# call the Trial Court’s Emergency HelpLine:  
+# 833-91-COURT (833-912-6878)  
+# Monday-Friday  
+# 8:30am - 4:30pm
+# % if chat_partners_available().help:
+# Live help is currently available in this interview. Click the speech bubble
+# (:comment-alt:) in the navigation bar to connect to a live advocate for help.
+# % endif
+#ields:
+# - To continue, please read the [terms of use](https://massaccess.suffolklitlab.org/privacy/): acknowledged_information_use
+#   datatype: checkboxes
+#   none of the above: False    
+#   minlength: 1
+#   choices:
+#     - I accept the terms of use.
+#   validation messages:
+#     minlength: |
+#       You cannot continue unless you agree to the terms of use.        
+#ontinue button field: basic_questions_intro_screen
+#erms:
+# green words: |
+#   Green words are legal terms or a short way of referring to something that needs more explanation. The definition or explanation pops up when you tap the green words.
+#ight: |
+# % if user_has_saved_answers:
+# ${fa_icon("bell", color="primary", size="sm")}
+# Saved answers available!  
+# 
+# ${action_button_html(url_action('load_answer'), icon="folder-open", label=word("View answers"), size="sm" )}
+# % endif    
+---
 id: Introduction 
 question: |
-  Probate and Family Court Motion Form 
+  Probate and Family Court motion form 
 subquestion: |
-  You can use this form to file many kinds of motions while your case is in the Probate and Family Court.  
+  It can take months to get a final decision in your case. You can ask the court to deal with important issues while you wait for the final hearing.
   
-  Before you use this interview, you must already have a case in the Probate and Family Court.
+  If you need the judge to make an order about something right away, you can file a motion.   
+  
+  If you get a temporary order, it will last until the judge makes a new order or a final decision.  
+  
+  You can get other kinds of motions also, like a motion to compel, or a motion to continue.
+  
+  Before we can help you write your motion, you must already have a case in the Probate and Family Court.
   
   Do you have a case in the Probate and Family Court?
 yesno: Generic_Motion_Family_Law_relabeled0014_intro
 ---
+Comment: |
+  I am not sure we want to tell people if they need help from the court they need to start a case.... check with Kate.
 id: Kick out screen for no existing case
 event: kick_out_no_existing_case
 question: |
-  Sorry, this form is not for you 
+  Sorry 
 subquestion: |
   You said you do not have a case in the Probate and Family Court. 
-  This interview is only for people who already have a case in the Probate and Family Court. 
+  
+  We can only help if you already have a case in the Probate and Family Court. 
   
   If you need to ask the court for help, you need to start a new case.
   
@@ -286,46 +338,110 @@ id: court papers
 question: |
   Do you know the court name and your docket number? 
 subquestion: |  
-  You can find this information on the Complaint or other court paperwork.
+  You can find this information on the complaint or other court paperwork.
 yesno: court_papers
 ---
 id: Kick out screen for no paperwork
 event: kick_out_no_paperwork
 question: |
-  Wait to fill out this form until you know the court name and your docket number. 
+  You need the court name and docket number of your case
 subquestion: | 
-  If you know the Court that your case is being heard in, call the Court for this information.
+  If you know the name of the court that is hearing your case, you can call the court or look up your case in [Mass Courts](https://Masscourts.org), Massachusetts' electronic court records website.
   
-  If you do not know the Court that your case is being heard in, follow these steps: 
+  If you do not know the name of the court that is hearing your case, follow these steps: 
   
-  1. Go to [Mass Courts](Masscourts.org).
+  1. Go to [Mass Courts](https://Masscourts.org).
   
-  2. Select “Click Here” in the bottom left-hand corner of the screen.
+  1. Check the 'I am not a robot box.'
   
-  3. Under “Court Department” choose "Probate and Family Court."
+  1. Tap “Click Here” in the bottom left corner of your screen.
   
-  4. Under “Court Division,” select the county that the case is being heard in. There is no need to select or change the “number of results" tab.
+  1. Under “Court Department” pick "Probate and Family Court."
   
-  5. Fill out your First and Last Name or Company Name, if applicable. There is no need to select a "Birth Date" or "Filing date" option.
+  1. Under “Court Division,” pick the county that the case is being heard in. You do not need to do anything with the “number of results" box.
   
-  6. Select “Search.”
+  1. Fill out your First and Last Name. You do not need to enter anything in any other  boxes.
   
-  7. Your court case should appear. 
+  1. Tap the “Search" button.
   
-  8. Select your court case and find the information you will need to complete this interview. 
+  1. Your case number is the first thing that appears in the result, at the end of the row, you see the name of the court that is hearing your case.
 buttons:
   - Exit: exit
     url: https://massaccess.suffolklitlab.org/
   - Restart: restart
 ---
+comment: |
+  We just asked them if they know their court name and if not how to find it. They should not need court locator here 
+if: |
+  True
+id: court information
+sets:
+  - courts[0].name
+question: |
+  What is the name of the court hearing your case?
+#subquestion: |  
+#  You can try finding your local court by using the [Courthouse Locator](https://www.mass.gov/guides/find-a-courthouse-serving-you).
+fields:
+  - Court name: courts[0]
+    datatype: object
+    choices: macourts.filter_courts(allowed_courts)
+    object labeler: |
+      lambda y: (str(y) +' (' + y.address.city + ')') if y.address.city not in str(y) else str(y)    
+    
+continue button field: ask_court_question    
+#help: 
+#  label: |
+#    How do I pick a court?
+#  content: |
+#    If you are responding to a case someone else filed, you may not
+#    get to choose your court. But if you are starting a new case, you have
+#    a choice. How do you know which court to choose?
+#  
+#    Massachusetts has 7 trial court departments:
+#    
+#    * District Court
+#    * Boston Municipal Court (BMC)
+#    * Superior Court
+#    * Housing Court
+#    * Probate and Family Court
+#    * Juvenile Court
+#    * Land Court
+#    
+#    The District Court, BMC, and Superior Court are all courts that can hear any
+#    type of case. The Land Court, Probate and Family, Juvenile Court, and
+#    Housing Court are all **specialist** courts that hear one kind of case. They
+#    may have judges with special training as well as special resources
+#    available.
+#    
+#    For example, the Housing Court has trained mediators, a special program for
+#    tenants with disabilities, and legal help available on-site on the day that
+#    eviction hearings are held.
+#    
+#    Different courts can make different kinds of decisions. Not every court can
+#    give you every kind of help. For example, you cannot file a housing
+#    discrimination case in the District Court. You can only ask for visitation
+#    in the Probate and Family Court.
+#    
+#    Depending on where you live, different courts may be further or closer to
+#    your address. There are about 100 district courts all over the state, but
+#    each county has only one or a few Superior Courts or specialty courts.
+#    
+#    Choosing a court means thinking about what kind of help you need, as well as
+#    which court you can get transportation to on the day of your hearing.
+#    
+#    Only you know the right choice.
+#    
+#    You can also view the court selection guidance at
+#    [mass.gov](https://www.mass.gov/courthouse-locator).
+---
 id: name of opposing party
 question: |
-  Who is on the 'other side' of your case?
+  Who is the 'other side' of your case?
 fields:
-  - Are they a person or business?: other_parties[0].person_type
+  - Are they a person or something else?: other_parties[0].person_type
     input type: radio
     choices:
-      - Business, organization, or entity: business
+      - Agency, business, group, or organization: business
       - Person: individual
   - First name: other_parties[0].name.first
     show if:
@@ -342,7 +458,7 @@ fields:
       variable: other_parties[0].person_type      
       is: "individual"
     required: False      
-  - Name of business, organization, or entity: other_parties[0].name.first
+  - Name of agency business, company, group or organization: other_parties[0].name.first
     show if:
       variable: other_parties[0].person_type
       is: business
@@ -482,6 +598,8 @@ code: |
   user_attorney = DAEmpty()
   bbo_number = DAEmpty()  
 ---
+comment: |
+  check with Kate, is this for the next court event, or do you already have a hearing date for this motion that you have not yet filed?   confusing question. But if we use it, 1 we need to know what  the hearing is for and 2 ask, Do you have a hearing already scheduled (in your case)? Don't use parens. 
 id: hearing information
 question: |
   Do you have a hearing date?    
@@ -569,10 +687,9 @@ code: |
 ---
 id: docket numbers
 question: |
-  What is the docket number for this case?
+  What is the docket number?
 subquestion: |
-  If there are multiple docket numbers on this form, you can click "${word("Add another")}"
-  to add more than one.
+  If your court paperwork has more than one docket number, tap "${word("Add another")}" to add them here.
 list collect: True
 fields:
   - no label: docket_numbers[i]
