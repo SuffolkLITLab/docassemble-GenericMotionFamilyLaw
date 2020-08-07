@@ -231,9 +231,9 @@ code: |
     op_address_is_impounded_flag = True    
   which_role
   set_parties
-  motion_name
   #set_users_request triggers requested_information
   set_users_request
+  motion_name
   if emergency_basis: 
     set_emergency_request  
   if not op_address_impounded:
@@ -269,31 +269,34 @@ code: |
 ---
 id: Introduction 
 question: |
-  Probate and Family Court Motion Form 
+  Probate and Family Court motion form 
 subquestion: |
-  You can use this form to file many kinds of motions while your case is in the Probate and Family Court.  
-  
-  Before you use this interview, you must already have a case in the Probate and Family Court.
-  
-  Do you have a case in the Probate and Family Court?
+    It can take months to get a final decision in your case. You can ask the court to deal with important issues while you wait for the final hearing.
+   
+    If you need the judge to make an order about something right away, you can file a motion.   
+   
+    If you get a temporary order, it will last until the judge makes a new order or a final decision.  
+   
+    You can get other kinds of motions also, like a motion to compel, or a motion to continue.
+   
+    Before we can help you write your motion, you must already have a case in the Probate and Family Court.
+    
+    **Do you have a case in the Probate and Family Court?**
 yesno: Generic_Motion_Family_Law_relabeled0014_intro
 ---
 id: Kick out screen for no existing case
 event: kick_out_no_existing_case
 question: |
-  Sorry, this form is not for you 
+  Sorry
 subquestion: |
-  You said you do not have a case in the Probate and Family Court. 
-  This interview is only for people who already have a case in the Probate and Family Court. 
+  You said you do not have a case in the Probate and Family Court.
   
-  If you need to ask the court for help, you need to start a new case.
+  We can only help if you already have a case in the Probate and Family Court.  
   
-  For example: 
+  Learn more about family law: 
   
-  * [Get a domestic violence restraining order](https://massaccess.suffolklitlab.org/dv/).
-  * [Get Child Support](https://www.masslegalhelp.org/children-and-families/how-to-get-a-child-support-order).
-  * [Ask for a Parenting Time Order](https://www.masslegalhelp.org/children-and-families/parenting-time/getting/complaint).
-  * [Other kinds of orders](https://www.masslegalhelp.org/children-and-families/probate-and-family-court/how-do-I-file).
+  * [Courts Self-Help](https://www.mass.gov/topics/courts-self-help).
+  * [Children and Families](https://www.masslegalhelp.org/children-and-families).
 buttons:
   - Exit: exit
     url: https://massaccess.suffolklitlab.org/
@@ -303,41 +306,55 @@ id: court papers
 question: |
   Do you know the court name and your docket number? 
 subquestion: |  
-  You can find this information on the Complaint or other court paperwork.
+  You can find this information on the complaint or other court paperwork.
 yesno: court_papers
 ---
 id: Kick out screen for no paperwork
 event: kick_out_no_paperwork
 question: |
-  Wait to fill out this form until you know the court name and your docket number. 
+  You need the court name and docket number of your case
 subquestion: | 
-  If you know the Court that your case is being heard in, call the Court for this information.
+  If you know the name of the court that is hearing your case, you can call the court or look up your case in [Mass Courts](https://Masscourts.org), Massachusetts' electronic court records website.
   
-  If you do not know the Court that your case is being heard in, follow these steps: 
+  If you do not know the name of the court that is hearing your case, follow these steps: 
   
-  1. Go to [Mass Courts](Masscourts.org).
+  1. Go to [Mass Courts](https://Masscourts.org).
   
-  2. Select “Click Here” in the bottom left-hand corner of the screen.
+  2. Check the 'I am not a robot box.'
   
-  3. Under “Court Department” choose "Probate and Family Court."
+  3. Tap “Click Here” in the bottom left corner of your screen.
   
-  4. Under “Court Division,” select the county that the case is being heard in. There is no need to select or change the “number of results" tab.
+  4. Under “Court Department” pick "Probate and Family Court."
   
-  5. Fill out your First and Last Name or Company Name, if applicable. There is no need to select a "Birth Date" or "Filing date" option.
+  5. Under “Court Division,” pick the county that the case is being heard in. You do not need to do anything with the “number of results" box.
   
-  6. Select “Search.”
+  6. Fill out your First and Last Name. You do not need to enter anything in any other boxes.
   
-  7. Your court case should appear. 
+  7. Tap the “Search" button.
   
-  8. Select your court case and find the information you will need to complete this interview. 
+  8. Your case number is the first thing that appears in the result, at the end of the row, you see the name of the court that is hearing your case.
 buttons:
   - Exit: exit
     url: https://massaccess.suffolklitlab.org/
   - Restart: restart
 ---
+# Temporarily always use this form
+if: |
+  True # not defined('preferred_court') or preferred_court != 'Housing Court'
+id: court information
+sets:
+  - courts[0].name
+question: |
+  What court is your case being heard in?
+fields:
+  - Court name: courts[0]
+    datatype: object
+    choices: macourts.filter_courts(allowed_courts)
+continue button field: ask_court_question    
+---
 id: name of opposing party
 question: |
-  Who is on the 'other side' of your case?
+  Who is the 'other side' in your case?
 fields:
   - Are they a person or business?: other_parties[0].person_type
     input type: radio
@@ -364,11 +381,11 @@ fields:
       variable: other_parties[0].person_type
       is: business
 ---
-id: User Address
+id: user address
 question: |
   What is your address?
 subquestion: |
-  Put in the address the Court should use to mail papers to you.
+  Use the address the court should use to mail papers to you.
 fields:
   - Street address: users[0].address.address
     address autocomplete: True
@@ -432,7 +449,7 @@ yesno: emergency_basis
 subquestion: | 
   During the COVID-19 crisis, the courts are only hearing some cases. 
   
-  Emergencies will get priority. 
+  Emergencies get priority. 
     
   Read more about [the cases the Court is hearing right now](https://www.masslegalhelp.org/covid-19-courts/probate-family).
 ---
@@ -440,8 +457,7 @@ id: impoundment
 question: |
   Keeping your information safe
 subquestion:
-  Normally ${ other_parties[0].familiar() } will see your address and contact information.
-  But if you live in a domestic violence shelter or if the court granted a Motion to Impound your address, ${ other_parties[0].familiar() } will not be able to see your information. 
+  Normally, ${ other_parties[0].familiar() } can see your address and contact information. But if you live in a domestic violence shelter or if the court granted a Motion to Impound your address, ${ other_parties[0].familiar() } will not be able to see your information. 
 fields: 
   - Do you live in a domestic violence shelter? : lives_in_domestic_violence_shelter
     datatype: yesnoradio
@@ -449,8 +465,10 @@ fields:
     datatype: yesnoradio
   - Do you need the Court to keep your phone number from ${ other_parties[0].familiar() } also?: should_impound_phone_number
     datatype: yesnoradio
-    note: |
-      The Court will still use your phone number to contact you.
+    js show if: |
+      val("impound_address") || val("lives_in_domestic_violence_shelter")
+  - note: |
+      The Court **will** use your phone number to contact you.
     js show if: |
       val("impound_address") || val("lives_in_domestic_violence_shelter")
 #---
@@ -500,10 +518,13 @@ code: |
 ---
 id: hearing information
 question: |
-  Do you have a hearing date?    
+  Do you already have a hearing scheduled in this case?    
 fields:
   - no label: user_has_hearing_date
-    datatype: yesnoradio 
+    datatype: yesnoradio
+  - note: |
+      Look at your hearing notice for the city, date, and time of your hearing. 
+    show if: user_has_hearing_date
   - Hearing City: hearing_city
     required: True 
     show if: user_has_hearing_date
@@ -518,9 +539,9 @@ fields:
 ---
 id: motion title 
 question: |
-  What is this motion for?
+  Name your motion
 subquestion: |  
-    This will be the name of the motion. Name the motion something short that explains what you need the judge to do. 
+    Name your motion something short that explains what you need the judge to do. 
     
     Helpful example: Visitation 
 
@@ -530,41 +551,47 @@ fields:
 ---
 id: service information
 question: |
-   Will you be able to mail a copy of this motion to ${ other_parties[0].familiar() } immediately upon completing this form?
+   Can you mail a copy of your motion to ${ other_parties[0].familiar() } as soon as you get it?
 subquestion:
-  Getting a copy of this motion to ${ other_parties[0].familiar() } is called "service."  
+  Delivering a copy of your motion to ${ other_parties[0].familiar() } is "service."  
   
-  You must do service by getting ${ other_parties[0].familiar() } a copy of this motion. 
-   
+  You **must** serve ${ other_parties[0].familiar() } with a copy of your motion.
 fields: 
   - no label: ready_to_serve
     datatype: yesnoradio  
-  - 'Date of service by mailing': service_by_mailing_date
-    datatype: date
-    default: ${today().format("MM-dd-yyyy")}
+  - 'Will you mail your motion today,[BR]${today()}?': serve_today 
+    datatype: yesnoradio
     show if: ready_to_serve
-  - note: |
-      You will need to discuss service with the clerk who will call you by the end of the next business day after you submit this form.
+  - 'When will you mail your motion?': choice_of_service_date
+    datatype: date
+    default: ${today()}
     js show if: |
-      ! val("ready_to_serve")
+      val("ready_to_serve") && val("serve_today") == false
+  - note: |
+      After you submit your motion to the court, the clerk should call you by the end of the next business day. Ask the clerk how you should serve ${other_parties.familiar()}.
+    show if: 
+      variable: ready_to_serve
+      is: False
 ---
-id: not ready to serve
-question: |
-  You will need to discuss service with the clerk who will call you by the end of the next business day after you submit this form
-
-buttons:
-  - Continue: continue
+code: | 
+  if not op_address_is_impounded_flag and ready_to_serve:
+    if serve_today:
+      service_by_mailing_date = today()
+    else:
+      service_by_mailing_date = choice_of_service_date 
+  else:
+    service_by_mailing_date = ""
 ---
 id: user request
 question: |
-  Tell the Court what you are asking for
+  Tell the court what you are asking for
 subquestion: |
-  Be as specific as possible. See examples below.
+  Be as specific as possible.
 fields:
-  - 'What do you need the Court to order?': requested_information 
+  - 'What do you need the court to order?': requested_information 
     input type: area
     rows: 8
-  - 'Why do you need the Court to make this order?': requested_reason_to_allow_this_motion
+  - 'Why do you need the court to make this order?': requested_reason_to_allow_this_motion
     input type: area
     rows: 8
 help:
@@ -585,11 +612,9 @@ code: |
 ---
 id: docket numbers
 question: |
-  What is the docket number for this case?
+  What is the docket number?
 subquestion: |
-  If there are multiple docket numbers on this form, you can click "${word("Add another")}"
-  to add more than one.
-list collect: True
+  If your court paperwork has more than one docket number, tap "${word("Add another")}" to add them here.
 fields:
   - no label: docket_numbers[i]
     required: True
@@ -723,67 +748,67 @@ question: |
   Review information
 review:
   - note: | 
-      ### About you, ${ users[0].name }: 
+      ### About you, ${ users[0].name } 
   - Edit your name: users[0].name.first
     button: |
-      Your name:[BR]  
+      **Your name:**[BR]  
       ${ users[0].name } 
   - Edit your address: 
      - users[0].address.address
      - recompute: 
          - address_is_impounded
     button: |
-      Your address:[BR] 
+      **Your address:**[BR] 
       ${ "Address Impounded" if address_is_impounded else users[0].address } 
   - Edit your contact information: users[0].phone_number
     button: |
-      Your contact information:[BR] 
+      **Your contact information:**[BR] 
       ${ users[0].mobile_number }[BR]
       ${ users[0].phone_number }[BR]
       ${ users[0].email }[BR] 
       ${ users[0].other_contact_method } 
   - Edit your impoundment details: lives_in_domestic_violence_shelter
     button: |
-      Impound address: ${ "Yes" if lives_in_domestic_violence_shelter or impound_address else "No" } 
+      **Impound address:** ${ "Yes" if lives_in_domestic_violence_shelter or impound_address else "No" } 
       
-      Impound phone number: ${ "Yes" if should_impound_phone_number else "No" }   
+      **Impound phone number:** ${ "Yes" if should_impound_phone_number else "No" }   
   - Edit your interpreter selection: user_needs_interpreter
     button: |
-      Needs interpreter: ${ "Yes" if user_needs_interpreter else "No" }[BR]
+      **Need an interpreter:** ${ "Yes" if user_needs_interpreter else "No" }[BR]
   - Edit your preferred language: user_preferred_language 
     show if: user_needs_interpreter
     button: |
-      Preferred language:[BR] 
+      **Preferred language:**[BR] 
       ${ capitalize( user_preferred_language ) }
   - note: | 
-      ### About ${ other_parties[0] }: 
-  - Edit other party's name: other_parties[0].name.first
+      ### About ${ other_parties[0] } 
+  - Edit other side's name: other_parties[0].name.first
     button: |
-      Other party's name:[BR]  
+      **Other side's name:**[BR]  
       ${ other_parties[0] }
-  - Edit other party's address: 
+  - Edit ${ other_parties[0] }'s address: 
      - op_address_impounded
      - recompute: 
          - op_address_is_impounded_flag
     button: |
-      Other party's address:[BR] 
+      **${ other_parties[0].familiar() }'s address**:[BR] 
       ${ "Address Impounded" if op_address_is_impounded_flag else other_parties[0].address } 
   - note: | 
-      ### Your court information: 
+      ### Your court information
   - Edit court: courts[0]
     button: |
-      Court: ${ courts[0] }
+      **Court:** ${ courts[0] }
   - Edit docket number: docket_numbers[0]
     button: |
-      Docket number: ${ docket_numbers }
+      **Docket number:** ${ docket_numbers }
   - Edit hearing details: user_has_hearing_date
     button: |
-      Hearing city: ${ None if not user_has_hearing_date else hearing_city }[BR]
-      Hearing date: ${ None if not user_has_hearing_date else hearing_date_month_day_year }[BR]
-      Hearing time: ${ None if not user_has_hearing_date else hearing_time }
+      **Hearing city:** ${ None if not user_has_hearing_date else hearing_city }[BR]
+      **Hearing date:** ${ None if not user_has_hearing_date else hearing_date_month_day_year }[BR]
+      **Hearing time:** ${ None if not user_has_hearing_date else hearing_time }
   - note: | 
-      ### About your motion: 
-  - Edit filing posture:
+      ### About your motion
+  - Edit your role:
      - which_role
      - recompute:
          - assign_user_role
@@ -791,30 +816,33 @@ review:
          - defendants
          - set_parties
     button: |
-      Filing as: ${ capitalize( which_role ) }
+      **You are filing as:** ${ capitalize( which_role ) }
   - Edit emergency basis: emergency_basis
     button: |
-      Emergency basis: ${ "No" if not emergency_basis else "Yes" }
+      **Emergency basis:** ${ "No" if not emergency_basis else "Yes" }
   - Edit your motion title: motion_name
     button: |
-      Your motion title:[BR] 
+      **Your motion title:**[BR] 
       Motion for ${ motion_name }
-  - Edit motion reason: requested_information
+  - Edit reason for your motion: requested_information
     button: |
-      Motion reason:
+      **Reason for your motion:**
       
       ${ requested_information }
       ${ requested_reason_to_allow_this_motion }
-  - note: | 
-      ### Your service information:   
+  - note: |
+      ### Your service information
+    show if: ready_to_serve
   - Edit service details: ready_to_serve
     button: |
-      Ready to serve: ${ "Yes" if not op_address_is_impounded_flag else "No" }
+      **Ready to serve:** ${ "Yes" if not op_address_is_impounded_flag else "No" }
   - Edit service by mail date: 
      - service_by_mailing_date
-    show if: ready_to_serve and not op_address_is_impounded_flag
+     - recompute:
+         - service_by_mailing_date
+    show if: not op_address_is_impounded_flag
     button: |
-      Service by mail date:[BR] 
+      **Service by mail date:**[BR] 
       ${ service_by_mailing_date }
 ---
 progress: 100
@@ -844,6 +872,7 @@ reconsider:
   - set_emergency_request
   - address_is_impounded
   - op_address_is_impounded_flag
+  - service_by_mailing_date
 attachment:
     variable name: Generic_Motion_Family_Law_relabeled0014_attachment
     name: Generic Motion Family Law
@@ -889,7 +918,7 @@ attachment:
       - "service_by_hand": ${ service_by_hand }
       - "service_by_hand_in_pm": ${ service_by_hand_in_pm }
       - "service_by_hand_in_am": ${ service_by_hand_in_am }
-      - "service_by_mailing_date": ${ service_by_mailing_date if not op_address_is_impounded_flag and ready_to_serve else "" }
+      - "service_by_mailing_date": ${ service_by_mailing_date }
       - "service_by_mailing": ${ ready_to_serve if not op_address_is_impounded_flag else "" }
       - "emergency": ${ "EMERGENCY" if emergency_basis else "" }
 ---
@@ -910,6 +939,7 @@ reconsider:
   - set_emergency_request
   - address_is_impounded
   - op_address_is_impounded_flag
+  - service_by_mailing_date
 attachment:
     variable name: Generic_Motion_Family_Law_relabeled0014_attachment_preview
     name: Generic Motion Family Law
@@ -953,7 +983,8 @@ attachment:
       - "service_by_hand": ${ service_by_hand }
       - "service_by_hand_in_pm": ${ service_by_hand_in_pm }
       - "service_by_hand_in_am": ${ service_by_hand_in_am }
-      - "service_by_mailing_date": ${ service_by_mailing_date if not op_address_is_impounded_flag and ready_to_serve else "" }
+      - "service_by_mailing_date": ${ service_by_mailing_date }
       - "service_by_mailing": ${ ready_to_serve if not op_address_is_impounded_flag else "" }
       - "emergency": ${ "EMERGENCY" if emergency_basis else "" }
+
 
