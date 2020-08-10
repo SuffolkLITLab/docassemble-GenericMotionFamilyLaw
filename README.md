@@ -1,8 +1,7 @@
-# docassemble.GenericMotionFamilyLaw
+# docassemble.MAVirtualCourt
 
-A docassemble extension.
+A docassemble extention. 
 
 ## Author
 
-vtamburino@su.suffolk.edu
-
+Mia Bonardi, mbonardi@su.suffolk.edu
