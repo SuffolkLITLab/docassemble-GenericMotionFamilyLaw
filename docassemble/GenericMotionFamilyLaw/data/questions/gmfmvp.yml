@@ -581,9 +581,13 @@ fields:
   - 'What do you need the court to order?': requested_information 
     input type: area
     rows: 8
+    minlength: 0
+    maxlength: 550
   - 'Why do you need the court to make this order?': requested_reason_to_allow_this_motion
     input type: area
     rows: 8
+    minlength: 0
+    maxlength: 550 
 help:
   label: |
     Examples
