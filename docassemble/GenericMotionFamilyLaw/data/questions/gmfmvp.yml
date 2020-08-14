@@ -603,10 +603,14 @@ id: docket numbers
 question: |
   What is the docket number?
 subquestion: |
-  If your court paperwork has more than one docket number, tap "${word("Add another")}" to add them here.
-list collect: True
+  If your court paperwork has more than one docket number, list them all. Put a comma after each number.
+  
+  If you do not have enough space to list them all, that is OK.  
 fields:
-  - no label: docket_numbers[i]
+  - no label: docket_numbers
+    input type: area
+    minlength: 0
+    maxlength: 75
     required: True
 ---
 code: |
