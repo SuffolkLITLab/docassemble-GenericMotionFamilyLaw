@@ -2,6 +2,9 @@
 include:
   - docassemble.MAVirtualCourt:basic-questions.yml
 ---
+metadata:
+  title: Family Law Motion
+---
 mandatory: True
 code: |
   interview_metadata # make sure we initialize the object
