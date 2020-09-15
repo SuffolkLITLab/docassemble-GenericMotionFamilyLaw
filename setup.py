@@ -43,7 +43,7 @@ def find_package_data(where='.', package='', exclude=standard_exclude, exclude_d
     return out
 
 setup(name='docassemble.GenericMotionFamilyLaw',
-      version='0.3',
+      version='0.4',
       description=('A docassemble extension.'),
       long_description='# docassemble.MAVirtualCourt\r\n\r\nA docassemble extention. \r\n\r\n## Author\r\n\r\nMia Bonardi, mbonardi@su.suffolk.edu',
       long_description_content_type='text/markdown',
