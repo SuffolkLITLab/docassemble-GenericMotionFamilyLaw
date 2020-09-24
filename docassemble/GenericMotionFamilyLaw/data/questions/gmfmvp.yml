@@ -25,167 +25,12 @@ code: |
     'logic block variable': 'Generic_Motion_Family_Law_relabeled0014',
     'attachment block variable': 'Generic_Motion_Family_Law_relabeled0014_attachment',
     'typical role': 'unknown',
-    'built_in_fields_used': [
-      {'variable': 'docket_number',
-       'transformed_variable': 'docket_numbers[0]',
-      },
-      {'variable': 'plaintiff',
-       'transformed_variable': 'str(plaintiffs[0])',
-      },
-      {'variable': 'defendant',
-       'transformed_variable': 'str(defendants[0])',
-      },
-      {'variable': 'user_name',
-       'transformed_variable': 'str(users[0])',
-      },
-      {'variable': 'signature_date__1',
-       'transformed_variable': 'signature_date',
-      },
-      {'variable': 'user_signature',
-       'transformed_variable': 'users[0].signature',
-      },
-      {'variable': 'user_name__2',
-       'transformed_variable': 'str(users[0])',
-      },
-      {'variable': 'user_address_street',
-       'transformed_variable': 'users[0].address.address',
-      },
-      {'variable': 'user_address_city',
-       'transformed_variable': 'users[0].address.city',
-      },
-      {'variable': 'user_address_state',
-       'transformed_variable': 'users[0].address.state',
-      },
-      {'variable': 'user_address_zip',
-       'transformed_variable': 'users[0].address.zip',
-      },
-      {'variable': 'user_phone',
-       'transformed_variable': 'users[0].phone_number',
-      },
-      {'variable': 'docket_number__2',
-       'transformed_variable': 'docket_numbers[0]',
-      },
-      {'variable': 'signature_date__2',
-       'transformed_variable': 'signature_date',
-      },
-      {'variable': 'other_party_name',
-       'transformed_variable': 'str(other_parties[0])',
-      },
-      {'variable': 'other_party_address_street',
-       'transformed_variable': 'other_parties[0].address.address',
-      },
-      {'variable': 'other_party_address_city',
-       'transformed_variable': 'other_parties[0].address.city',
-      },
-      {'variable': 'other_party_address_state',
-       'transformed_variable': 'other_parties[0].address.state',
-      },
-      {'variable': 'other_party_address_zip',
-       'transformed_variable': 'other_parties[0].address.zip',
-      },
-      {'variable': 'user_signature__2',
-       'transformed_variable': 'users[0].signature',
-      },
-      ],
-    'fields': [
-      {'variable': 'court_division',
-       'transformed_variable': 'courts[0].division',
-      'field_type': 'text',
-      'field_data_type': 'text',
-      },
-      {'variable': 'motion_name',
-       'transformed_variable': 'motion_name',
-      'field_type': 'text',
-      'field_data_type': 'text',
-      },
-      {'variable': 'user_is_petitioner',
-       'transformed_variable': 'users[0].is_petitioner',
-      'field_type': 'yesno',
-      },
-      {'variable': 'user_is_defendant',
-       'transformed_variable': 'users[0].is_defendant',
-      'field_type': 'yesno',
-      },
-      {'variable': 'user_is_plaintiff',
-       'transformed_variable': 'users[0].is_plaintiff',
-      'field_type': 'yesno',
-      },
-      {'variable': 'user_is_respondent',
-       'transformed_variable': 'users[0].is_respondent',
-      'field_type': 'yesno',
-      },
-      {'variable': 'user_request',
-       'transformed_variable': 'users[0].request',
-      'field_type': 'text',
-      'field_data_type': 'text',
-      },
-      {'variable': 'hearing_city',
-       'transformed_variable': 'hearing_city',
-      'field_type': 'text',
-      'field_data_type': 'text',
-      },
-      {'variable': 'hearing_date_month_day_year',
-       'transformed_variable': 'hearing_date_month_day_year',
-      'field_type': 'text',
-      'field_data_type': 'date',
-      },
-      {'variable': 'hearing_time',
-       'transformed_variable': 'hearing_time',
-      'field_type': 'text',
-      'field_data_type': 'text',
-      },
-      {'variable': 'bbo_number',
-       'transformed_variable': 'bbo_number',
-      'field_type': 'text',
-      'field_data_type': 'text',
-      },
-      {'variable': 'court_division__2',
-       'transformed_variable': 'courts[0].division',
-      'field_type': 'text',
-      'field_data_type': 'text',
-      },
-      {'variable': 'motion_name__2',
-       'transformed_variable': 'motion_name',
-      'field_type': 'text',
-      'field_data_type': 'text',
-      },
-      {'variable': 'service_by_hand_date',
-       'transformed_variable': 'service_by_hand_date',
-      'field_type': 'text',
-      'field_data_type': 'date',
-      },
-      {'variable': 'service_by_hand_time',
-       'transformed_variable': 'service_by_hand_time',
-      'field_type': 'text',
-      'field_data_type': 'text',
-      },
-      {'variable': 'service_by_hand',
-       'transformed_variable': 'service_by_hand',
-      'field_type': 'yesno',
-      },
-      {'variable': 'service_by_hand_in_pm',
-       'transformed_variable': 'service_by_hand_in_pm',
-      'field_type': 'yesno',
-      },
-      {'variable': 'service_by_hand_in_am',
-       'transformed_variable': 'service_by_hand_in_am',
-      'field_type': 'yesno',
-      },
-      {'variable': 'service_by_mailing_date',
-       'transformed_variable': 'service_by_mailing_date',
-      'field_type': 'text',
-      'field_data_type': 'date',
-      },
-      {'variable': 'service_by_mailing',
-       'transformed_variable': 'service_by_mailing',
-      'field_type': 'yesno',
-      },
-      ],
   })
 ---
 id: interview_order_Generic_Motion_Family_Law_relabeled0014
 mandatory: True
 code: |
+  form_approved_for_email_filing = False
   # This is a placeholder to control logic flow in this interview
   # It was generated from interview_generator.py as an 'interview order' type question.
   basic_questions_intro_screen 
@@ -683,6 +528,29 @@ subquestion: |
 
 progress: 95
 ---
+if: not form_approved_for_email_filing
+id: download form do not email
+event: download
+decoration: file-download
+question: |
+  Review, download, and file form
+subquestion: |
+  Your form is ready. You still need to call the court
+  to figure out the best way to file it and to get a copy to ${ other_parties}.
+    
+  1. Click the preview image below to open the form in a new window.
+  2. Download and save or print a copy of this form for your 
+  records.
+  3. Call the clerk of the ${courts[0]} at ${ courts[0].phone } or call the emergency help line
+  at 833-912-6878 to get help filing this form. The clerk may ask you
+  to email it, e-file it, or to print and mail it.
+
+  ${ form_to_file_no_cover }  
+progress: 100
+attachment code: Generic_Motion_Family_Law_relabeled0014_attachment
+section: download  
+---
+if: form_approved_for_email_filing
 id: download form
 event: download
 decoration: file-download
