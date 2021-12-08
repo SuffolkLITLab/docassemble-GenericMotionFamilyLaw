@@ -1,9 +1,19 @@
 ---
 include:
-  - docassemble.MAVirtualCourt:basic-questions.yml
+  - docassemble.AssemblyLine:al_package.yml
+  - docassemble.MassAccess:massaccess.yml
 ---
 metadata:
-  title: Family Law Motion  
+  title: |
+    Family Law Motion
+  authors:
+    - Mia Bonardi
+---
+code: |
+  github_repo_name = "docassemble-GenericMotionFamilyLaw"  
+---
+code: |
+  interview_short_title = "File a Family Law motion"
 ---
 mandatory: True
 code: |
@@ -41,7 +51,7 @@ code: |
   # Set the preferred/allowed courts for this interview
   preferred_court = interview_metadata["Generic_Motion_Family_Law_relabeled0014"]["preferred court"]
   allowed_courts = interview_metadata["Generic_Motion_Family_Law_relabeled0014"]["allowed courts"]
-  courts[0].division
+  trial_court.division
   docket_numbers[0]
   user_has_hearing_date
   str(users[0])
@@ -95,9 +105,6 @@ code: |
   signature_date = today()
   Generic_Motion_Family_Law_relabeled0014 = True
   download
----
-code: |
-  interview_short_title = "Ask the court for a motion"
 ---
 id: introduction 
 question: |
@@ -168,21 +175,7 @@ subquestion: |
 buttons:
   - Exit: exit
     url: https://massaccess.suffolklitlab.org/
-  - Restart: restart
----
-# Temporarily always use this form
-if: |
-  True # not defined('preferred_court') or preferred_court != 'Housing Court'
-id: court information
-sets:
-  - courts[0].name
-question: |
-  What court is your case being heard in?
-fields:
-  - Court name: courts[0]
-    datatype: object
-    choices: macourts.filter_courts(allowed_courts)
-continue button field: ask_court_question    
+  - Restart: restart  
 ---
 id: name of opposing party
 question: |
@@ -515,7 +508,6 @@ code: |
   assign_user_role = True
 ---
 id: review before signature
-need: form_to_sign
 continue button field: preview_screen
 question: |
   Nearly finished
@@ -524,11 +516,11 @@ subquestion: |
   
   Don't forget to come back to this page to click to the final step of signing and sending the form to the court. 
   
-   ${ form_to_sign }
+  ${ Generic_Motion_Family_Law_relabeled0014_attachment.as_pdf(key='preview') }
 
 progress: 95
 ---
-if: not form_approved_for_email_filing
+# if: not form_approved_for_email_filing
 id: download form do not email
 event: download
 decoration: file-download
@@ -541,87 +533,68 @@ subquestion: |
   1. Click the preview image below to open the form in a new window.
   2. Download and save or print a copy of this form for your 
   records.
-  3. Call the clerk of the ${courts[0]} at ${ courts[0].phone } or call the emergency help line
+  3. Call the clerk of the ${ trial_court } at ${ trial_court.phone } or call the emergency help line
   at 833-912-6878 to get help filing this form. The clerk may ask you
   to email it, e-file it, or to print and mail it.
 
-  ${ form_to_file_no_cover }  
+  ${ al_user_bundle.download_list_html() } 
+  
+  ${ al_user_bundle.send_button_html() }
 progress: 100
-attachment code: Generic_Motion_Family_Law_relabeled0014_attachment
 section: download  
 ---
-if: form_approved_for_email_filing
-id: download form
-event: download
-decoration: file-download
-question: |
-  % if not defined('email_success') or not email_success:
-  Review, download, and send form
-  % else:
-  Form delivered
-  % endif
-subquestion: |
-  % if not defined('email_success') or not email_success:
-  Thank you ${users[0]}. Your form is ready to send to the court. 
-  
-  **It is not delivered until you complete the delivery process below.**
-
-  1. Click the preview image below to open the form in a new window.
-  2. Download and save or print a copy of this form for your 
-  records.
-  3. Click the "Submit to ${courts[0]}" button to send it to the court. 
-  4. You will have a chance to add instructions to the clerk and see the cover page before final delivery.
-  % else:
-  If you do not hear from the court in 1 business day, call the Trial Court’s Emergency HelpLine 833-91-COURT (833-912-6878).
-  
-  The Emergency HelpLine is open:  
-  8:30am - 4:30pm,   
-  Monday - Friday.
-  % endif
-  
-  ${ form_to_file_no_cover }  
-  
-  % if not defined('email_success') or not email_success:
-    ${ action_button_html( url_action('form_delivery_complete'), id_tag="submitToCourt", label="Submit to " + str(courts[0].name), icon=send_icon, size="md", color="primary")}
-    
-  Or download/email below:
-  % else:
-    Your email has already been delivered to ${courts[0]}
-    
-  [:file-download: Download with cover page](${final_form_to_file.url_for()})    
-  % endif
-progress: 100
-attachment code: Generic_Motion_Family_Law_relabeled0014_attachment
-section: download
+#if: form_approved_for_email_filing
+#id: download form
+#event: download
+#decoration: file-download
+#question: |
+#  % if not defined('email_success') or not email_success:
+#  Review, download, and send form
+#  % else:
+#  Form delivered
+#  % endif
+#subquestion: |
+#  % if not defined('email_success') or not email_success:
+#  Thank you ${users[0]}. Your form is ready to send to the court. 
+#  
+#  **It is not delivered until you complete the delivery process below.**
+#
+#  1. Click the preview image below to open the form in a new window.
+#  2. Download and save or print a copy of this form for your 
+#  records.
+#  3. Click the "Submit to ${courts[0]}" button to send it to the court. 
+#  4. You will have a chance to add instructions to the clerk and see the cover page before final delivery.
+#  % else:
+#  If you do not hear from the court in 1 business day, call the Trial Court’s Emergency HelpLine 833-91-COURT (833-912-6878).
+#  
+#  The Emergency HelpLine is open:  
+#  8:30am - 4:30pm,   
+#  Monday - Friday.
+#  % endif
+#  
+#  ${ form_to_file_no_cover }  
+#  
+#  % if not defined('email_success') or not email_success:
+#    ${ action_button_html( url_action('form_delivery_complete'), id_tag="submitToCourt", label="Submit to " + str(courts[0].name), icon=send_icon, size="md", color="primary")}
+#    
+#  Or download/email below:
+#  % else:
+#    Your email has already been delivered to ${courts[0]}
+#    
+#  [:file-download: Download with cover page](${final_form_to_file.url_for()})    
+#  % endif
+#progress: 100
+#attachment code: Generic_Motion_Family_Law_relabeled0014_attachment
+#section: download
 ---
-progress: 100
-mandatory: False
-question: |
-  Placeholder download screen
-subquestion: |
-  Placeholder
-  
-  ### Next steps
-  
-  1. Step 1
-  1. Step 2
-  
-  Below is a preview of your form.
-  
-  ${ Generic_Motion_Family_Law_relabeled0014_attachment }
-attachment code: Generic_Motion_Family_Law_relabeled0014_attachment
+objects:
+  - Generic_Motion_Family_Law_relabeled0014_attachment: ALDocument.using(title="Family Law Motion", filename="family_law_motion", enabled=True)
 ---
-need: Generic_Motion_Family_Law_relabeled0014
-reconsider: 
-  - set_parties
-  - assign_user_role
-  - plaintiffs
-  - defendants
-  - address_is_impounded
-  - op_address_is_impounded_flag
-  - service_by_mailing_date
+objects:
+  - al_user_bundle: ALDocumentBundle.using(title="Family Law Motion", enabled=True, filename="family_law_motion", elements=[Generic_Motion_Family_Law_relabeled0014_attachment])
+---
 attachment:
-    variable name: Generic_Motion_Family_Law_relabeled0014_attachment
+    variable name: Generic_Motion_Family_Law_relabeled0014_attachment[i]
     name: Generic Motion Family Law
     filename: Generic_Motion_Family_Law
     pdf template file: Generic_Motion_Family_Law_re-labeled.pdf
@@ -647,7 +620,7 @@ attachment:
       - "other_party_address_state": ${ "" if op_address_is_impounded_flag else other_parties[0].address.state }
       - "other_party_address_zip": ${ "" if op_address_is_impounded_flag else other_parties[0].address.zip }
       - "user_signature__2": ${ users[0].signature if ready_to_serve else "" }
-      - "court_division": ${ courts[0].division }
+      - "court_division": ${ trial_court.division }
       - "motion_name": ${ motion_name }
       - "user_is_petitioner": ${ users[0].is_petitioner }
       - "user_is_defendant": ${ users[0].is_defendant }
@@ -658,7 +631,7 @@ attachment:
       - "hearing_date_month_day_year": ${ hearing_date_month_day_year }
       - "hearing_time": ${ hearing_time.strftime("%H:%M %p") }
       - "bbo_number": ${ bbo_number }
-      - "court_division__2": ${ courts[0].division }
+      - "court_division__2": ${ trial_court.division }
       - "motion_name__2": ${ motion_name }
       - "service_by_hand_date": ${ service_by_hand_date }
       - "service_by_hand_time": ${ service_by_hand_time.strftime("%H:%M %p") }
@@ -676,58 +649,3 @@ subquestion: |
   Here is a preview of the form you'll sign on the next page. 
   
    ${Generic_Motion_Family_Law_relabeled0014_attachment_preview}
----
-reconsider: 
-  - set_parties
-  - assign_user_role
-  - plaintiffs
-  - defendants
-  - address_is_impounded
-  - op_address_is_impounded_flag
-  - service_by_mailing_date
-attachment:
-    variable name: Generic_Motion_Family_Law_relabeled0014_attachment_preview
-    name: Generic Motion Family Law
-    filename: Generic_Motion_Family_Law
-    pdf template file: Generic_Motion_Family_Law_re-labeled.pdf
-    skip undefined: True 
-    fields: 
-      - "docket_number": ${ docket_numbers }
-      - "plaintiff": ${ str(plaintiffs) }
-      - "defendant": ${ str(defendants) }
-      - "user_name": ${ str(users[0]) }
-      - "signature_date__1": ${ signature_date }
-      - "user_name__2": ${ str(users[0]) }
-      - "user_address_street": ${ "Address Impounded" if address_is_impounded else users[0].address.line_one() }
-      - "user_address_city": ${ "" if address_is_impounded else users[0].address.city }
-      - "user_address_state": ${ "" if address_is_impounded else users[0].address.state }
-      - "user_address_zip": ${ "" if address_is_impounded else users[0].address.zip }
-      - "user_phone": ${ users[0].phone_numbers() if not should_impound_phone_number else "" }
-      - "docket_number__2": ${ docket_numbers }
-      - "signature_date__2": ${ signature_date }
-      - "other_party_name": ${ str(other_parties[0]) }
-      - "other_party_address_street": ${ "Address Impounded" if op_address_is_impounded_flag else other_parties[0].address.line_one() }
-      - "other_party_address_city": ${ "" if op_address_is_impounded_flag else other_parties[0].address.city }
-      - "other_party_address_state": ${ "" if op_address_is_impounded_flag else other_parties[0].address.state }
-      - "other_party_address_zip": ${ "" if op_address_is_impounded_flag else other_parties[0].address.zip }
-      - "court_division": ${ courts[0].division }
-      - "motion_name": ${ motion_name }
-      - "user_is_petitioner": ${ users[0].is_petitioner }
-      - "user_is_defendant": ${ users[0].is_defendant }
-      - "user_is_plaintiff": ${ users[0].is_plaintiff }
-      - "user_is_respondent": ${ users[0].is_respondent }
-      - "user_request": ${ users[0].request + emergency_text if emergency_basis else users[0].request }
-      - "hearing_city": ${ hearing_city }
-      - "hearing_date_month_day_year": ${ hearing_date_month_day_year }
-      - "hearing_time": ${ hearing_time.strftime("%H:%M %p") }
-      - "bbo_number": ${ bbo_number }
-      - "court_division__2": ${ courts[0].division }
-      - "motion_name__2": ${ motion_name }
-      - "service_by_hand_date": ${ service_by_hand_date }
-      - "service_by_hand_time": ${ service_by_hand_time.strftime("%H:%M %p") }
-      - "service_by_hand": ${ service_by_hand }
-      - "service_by_hand_in_pm": ${ service_by_hand_in_pm }
-      - "service_by_hand_in_am": ${ service_by_hand_in_am }
-      - "service_by_mailing_date": ${ service_by_mailing_date }
-      - "service_by_mailing": ${ ready_to_serve if not op_address_is_impounded_flag else "" }
-      - "emergency": ${ "EMERGENCY" if emergency_basis else "" }
