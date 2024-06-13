@@ -8,6 +8,46 @@ metadata:
     Family Law Motion
   authors:
     - Mia Bonardi
+  short title: |
+    Family Law Motion
+  description: |
+    If you need a decision from the judge in an existing case in the Probate and Family
+    court, you can use this interview to make a **motion** to the judge.
+
+    A motion is a request for the judge to make a decision about something important in your case.
+    This interview can help you make a motion about anything in the case. For example, to ask
+    for more time to respond to a court paper, or to dismiss the case, or to ask for a temporary order.
+  can_I_use_this_form: |
+    If you have an existing case with the Probate and Family Court, you can use this interview.
+
+    You need to have a legal reason to ask the judge to make a decision. For example:
+    your motion can be based on a law, a rule, or a court order.
+  before_you_start: |
+    You need to know the legal rule or court order that is the reason for your motion. This
+    interview will help you explain what and why you need your motion, but it will not help
+    you research the law that applies.
+  maturity: production
+  estimated_completion_minutes: 20
+  estimated_completion_delta: 10
+  languages:
+    - en
+  help_page_url: https://www.masslegalhelp.org/children-families-divorce/probate-and-family-court/what-can-i-do-if-i-need-probate-and-family-court
+  help_page_title: What can I do if I need a Probate and Family Court order right away (temporary orders)?
+  LIST_topics: 
+    - FA-00-00-00-00
+  tags: 
+    - FA-00-00-00-00
+  jurisdiction: NAM-US-US+MA
+  original_form: https://www.mass.gov/info-details/probate-and-family-court-motion-cjd-400
+  original_form_published_on: 2007
+  review_date: 2024
+  form_titles:
+    - Family Law Motion
+  form_numbers:
+    - CJ-D 400 (04/07)
+  fees:
+    - Filing fee: 0.00
+  update_notes: |
 ---
 code: |
   github_repo_name = "docassemble-GenericMotionFamilyLaw"  
