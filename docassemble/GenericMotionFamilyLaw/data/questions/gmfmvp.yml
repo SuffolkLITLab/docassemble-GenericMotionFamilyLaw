@@ -161,7 +161,9 @@ subquestion: |
     Before we can help you write your motion, you must already have a case in the Probate and Family Court.
     
     **Do you have a case in the Probate and Family Court?**
-yesno: Generic_Motion_Family_Law_relabeled0014_intro
+fields:
+  - no label: Generic_Motion_Family_Law_relabeled0014_intro
+    datatype: yesnoradio
 ---
 id: Kick out screen for no existing case
 event: kick_out_no_existing_case
@@ -186,7 +188,9 @@ question: |
   Do you know the court name and your docket number? 
 subquestion: |  
   You can find this information on the complaint or other court paperwork.
-yesno: court_papers
+fields:
+  - no label: court_papers
+    datatype: yesnoradio
 ---
 id: Kick out screen for no paperwork
 event: kick_out_no_paperwork
@@ -316,7 +320,9 @@ code: |
 id: emergency basis request
 question: |
   Is this an emergency?
-yesno: emergency_basis
+fields:
+  - no label: emergency_basis
+    datatype: yesnoradio
 subquestion: | 
   During the COVID-19 crisis, the courts are only hearing some cases. 
   
@@ -391,7 +397,7 @@ id: hearing information
 question: |
   Do you already have a hearing scheduled in this case?    
 fields:
-  - no label: user_has_hearing_date
+  - "Do you already have a hearing scheduled in this case?": user_has_hearing_date
     datatype: yesnoradio
   - note: |
       Look at your hearing notice for the city, date, and time of your hearing. 
@@ -428,7 +434,7 @@ subquestion:
   
   You **must** serve ${ other_parties[0].familiar() } with a copy of your motion.
 fields: 
-  - no label: ready_to_serve
+  - "Can you mail a copy of your motion to ${ other_parties[0].familiar() } as soon as you get it?": ready_to_serve
     datatype: yesnoradio  
   - 'Will you mail your motion today,[BR]${today()}?': serve_today 
     datatype: yesnoradio
@@ -683,6 +689,7 @@ attachment:
       - "emergency": ${ "EMERGENCY" if emergency_basis else "" }
 ---
 continue button field: Generic_Motion_Family_Law_relabeled0014_preview_question
+id: "placeholder preview screen"
 question: |
   Placeholder preview screen
 subquestion: |
